@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>호마맨의 체육탐구 근육 문제풀이 — 휘향찬란 칭찬 & 사운드</title>
+<title>호마맨의 체육탐구 근육 문제풀이 — 확장 랜덤 버전</title>
 <style>
   :root{
     --bg:#f7fafc; --ink:#111827; --muted:#6b7280; --card:#ffffff; --border:#e5e7eb;
@@ -108,25 +108,43 @@
 </div>
 
 <script>
-// ===== 데이터 =====
+// ===== 근육 데이터 확장 =====
 const MUSCLES = [
-  {name:"승모근(상·중·하부)", actions:["견갑 — 거상","견갑 — 하강","견갑 — 후인(내전)","견갑 — 상방회전"]},
+  {name:"승모근(상·중·하부)", actions:["견갑 — 거상","견갑 — 하강","견갑 — 후인(내전)","견갑 — 상방회전","견갑 — 상방회전(상·하부 협응)"]},
   {name:"광배근", actions:["어깨 — 신전","어깨 — 내전","어깨 — 내회전","견갑 — 하강(보조)"]},
   {name:"햄스트링(전체)", actions:["무릎 — 굴곡","고관절 — 신전"]},
   {name:"대퇴사두근", actions:["무릎 — 신전","고관절 — 굴곡(대퇴직근)"]},
   {name:"비복근", actions:["발목 — 저측굴곡(발바닥굽힘)","무릎 — 굴곡(보조)"]},
-  {name:"전완근(굴근·신근)", actions:["손목 — 굴곡","손목 — 신전","전완 — 회내(일부)","전완 — 회외(일부)"]},
+  {name:"전완근(굴근·신근)", actions:["손목 — 굴곡","손목 — 신전","전완 — 회내(일부)","전완 — 회외(일부)","손가락 — 굴곡/신전(일부)"]},
   {name:"상완이두근", actions:["팔꿈치 — 굴곡","전완 — 회외","어깨 — 굴곡(보조)"]},
   {name:"상완삼두근", actions:["팔꿈치 — 신전","어깨 — 신전(장두)","어깨 — 내전(장두)"]},
   {name:"삼각근(전·중·후부)", actions:["어깨 — 굴곡(전부)","어깨 — 외전(중부)","어깨 — 신전(후부)","어깨 — 내회전(전부)","어깨 — 외회전(후부)","어깨 — 수평내전(전부)","어깨 — 수평외전(후부)"]},
   {name:"복근(복직근 중심)", actions:["몸통 — 굴곡","골반 — 후방경사"]},
   {name:"대둔근", actions:["고관절 — 신전","고관절 — 외회전","고관절 — 벌림(상부섬유)"]},
-  {name:"중둔근", actions:["고관절 — 벌림","고관절 — 내회전(전섬유)","고관절 — 신전·외회전(후섬유)"]},
-  {name:"장요근", actions:["고관절 — 굴곡","고관절 — 외회전(보조)"]},
+  {name:"중둔근", actions:["고관절 — 벌림","고관절 — 내회전(전섬유)","고관절 — 신전·외회전(후섬유)","보행 시 골반 안정화"]},
+  {name:"장요근", actions:["고관절 — 굴곡","고관절 — 외회전(보조)","요추 — 전만 유지(보조)"]},
   {name:"전거근", actions:["견갑 — 전인(벌림)","견갑 — 상방회전","견갑 — 고정"]},
   {name:"회전근개(극상/극하/소원/견갑하)", actions:["어깨 — 외전(초기, 극상근)","어깨 — 외회전(극하/소원근)","어깨 — 내회전(견갑하근)","견관절 안정화"]},
+  {name:"내전근군(장/단/대내전근 등)", actions:["고관절 — 내전","고관절 — 굴곡(보조)","고관절 — 외회전(일부)"]},
 ];
-const ALL_ACTIONS = Array.from(new Set(MUSCLES.flatMap(m=>m.actions)));
+
+// 추가적인 '오답/교란' 풀을 위해, 실제로 쓰이지는 않지만 다양성을 늘릴 수 있는 일반 동작 용어
+const EXTRA_ACTIONS = [
+  "어깨 — 관절 중심 안정화(보조)",
+  "견갑 — 하방회전(보조)",
+  "몸통 — 신전(보조)",
+  "무릎 — 신전(보조)",
+  "발목 — 배측굴곡(보조)",
+  "전완 — 중립 유지(보조)",
+  "골반 — 전방경사(보조)",
+  "견갑 — 전인/후인 조절(보조)"
+];
+
+// 전체 보기 풀
+const ALL_ACTIONS = Array.from(new Set([
+  ...MUSCLES.flatMap(m=>m.actions),
+  ...EXTRA_ACTIONS
+]));
 
 // ===== 상태/유틸 =====
 let state = { total: 10, bank: [], idx: 0, correct: 0 };
@@ -180,7 +198,7 @@ function wrongBuzz(){
 function drumRollAndFanfare(totalScore){
   const ctx = ensureAudio();
   const t0 = ctx.currentTime;
-  // simple noise burst as drum roll
+  // drum roll
   const bufferSize = 2 * ctx.sampleRate;
   const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
   const data = buffer.getChannelData(0);
@@ -193,8 +211,8 @@ function drumRollAndFanfare(totalScore){
   gain.gain.exponentialRampToValueAtTime(0.0001, t0+1.0);
   noise.connect(band).connect(gain).connect(ctx.destination);
   noise.start(t0); noise.stop(t0+1.05);
-  // fanfare chord
-  const base = totalScore===100 ? 523 : 440; // C5 or A4
+  // fanfare
+  const base = totalScore===100 ? 523 : 440;
   chord([base, base*5/4, base*3/2], 0.7, 0.2, 0.9);
   chord([base*2, base*2*5/4, base*2*3/2], 0.6, 0.15, 1.0);
 }
@@ -215,22 +233,37 @@ function buildQuestions(n){
 }
 function makeMuscleQuestion(m){
   const acts = m.actions.slice();
-  const k = (acts.length >= 2 && Math.random()<0.45) ? 2 : 1;
+  const k = (acts.length >= 2 && Math.random()<0.5) ? 2 : 1; // 복수정답 비율 살짝 상승
   const correctArr = sample(acts, k);
   const correct = new Set(correctArr);
   const optionCount = (Math.random()<0.5 ? 4 : 5);
-  let options = correctArr.slice(); // 정답 먼저
+
+  // 정답 먼저 포함
+  let options = correctArr.slice();
+
+  // 오답 풀을 크게 확장: 동일 관절군/타 관절군 혼합
   const pool = ALL_ACTIONS.filter(a => !correct.has(a));
-  let distractors = uniq(sample(pool, optionCount * 3));
+  // 동일 관절 우선 추출
+  const jointKey = acts[0].split('—')[0].trim(); // "어깨 ", "고관절 " 등
+  const sameJoint = pool.filter(a => a.startsWith(jointKey));
+  const otherJoint = pool.filter(a => !a.startsWith(jointKey));
+
+  let distractors = uniq([
+    ...sample(sameJoint, optionCount * 2),
+    ...sample(otherJoint, optionCount * 2)
+  ]);
+
   for(const d of distractors){
     if(options.length >= optionCount) break;
     if(!options.map(norm).includes(norm(d))) options.push(d);
   }
+  // 아직 부족하면 전체 풀에서 채우기
   let idx=0;
   while(options.length < optionCount && idx < pool.length){
     const cand = pool[idx++];
     if(!options.map(norm).includes(norm(cand))) options.push(cand);
   }
+
   options = shuffle(options);
   const explain = `<b>${m.name}</b>의 대표 작용<br>• ${m.actions.join("<br>• ")}`;
   return { muscle:m.name, options, correct, multi:(k>1), explain };
@@ -327,7 +360,6 @@ function showResult(){
   const pct = Math.round(100*state.correct/state.total);
   document.getElementById('score').textContent = `정답 ${state.correct} / ${state.total} → ${points}점 (${pct}%)`;
 
-  // celebratory messages
   const msgEl = document.getElementById('passMsg');
   if(points === 100){
     msgEl.className = 'celebrate rainbow';
@@ -346,12 +378,10 @@ function showResult(){
     msgEl.innerHTML = "💥 아직 근육이 깨어나지 않았어요! 다시 풀어서 <b>70점 이상</b> 맞을 때까지 도전! 화이팅!! 💪🔥";
   }
 
-  // final sounds & big confetti
   drumRollAndFanfare(points);
   const mult = (points===100) ? 2 : 1.3;
   triggerConfetti(mult);
 
-  // summary
   const items = state.bank.map((q,i)=>{
     const correctList = [...q.correct].join(", ");
     return `<li><b>${i+1}. ${q.muscle}</b> — 정답: ${correctList}</li>`;
