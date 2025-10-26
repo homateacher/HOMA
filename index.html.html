@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>호마맨의 체육탐구 근육 문제풀이 — 확장 랜덤 버전</title>
+<title>호마맨의 체육탐구 근육 문제풀이 — 확장 랜덤 v3 (정답=전체 작용 기반)</title>
 <style>
   :root{
     --bg:#f7fafc; --ink:#111827; --muted:#6b7280; --card:#ffffff; --border:#e5e7eb;
@@ -50,23 +50,6 @@
   .small{font-size:clamp(12px,3.4vw,13px); color:var(--muted)}
   #confettiCanvas{position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:9999;}
   .prompt, .opt span, .explain, .small { word-break: keep-all; overflow-wrap: anywhere; }
-
-  /* ✨ Score-based flair */
-  .celebrate{ text-align:center; margin-top:8px; }
-  .rainbow{
-    font-weight:900;
-    font-size:clamp(28px,9vw,56px);
-    background: linear-gradient(90deg,#ff0048,#ff8a00,#ffd200,#16c60c,#00c3ff,#7a00ff);
-    -webkit-background-clip:text; background-clip:text; color:transparent;
-    animation: shimmer 2s linear infinite;
-  }
-  @keyframes shimmer { to { background-position: 200% 0; } }
-  .glow90{ font-size:clamp(24px,7.5vw,48px); color:#1d4ed8; text-shadow:0 0 12px rgba(29,78,216,.4)}
-  .glow70{ font-size:clamp(22px,6.8vw,42px); color:#0ea5e9; text-shadow:0 0 10px rgba(14,165,233,.35)}
-  .glow65{ font-size:clamp(20px,6.4vw,36px); color:#f59e0b; animation: pulse 1.2s ease-in-out infinite }
-  .glow60{ font-size:clamp(20px,6vw,34px); color:#ef4444; animation: wobble .9s ease-in-out infinite }
-  @keyframes pulse { 0%,100%{ transform:scale(1)} 50%{ transform:scale(1.05)} }
-  @keyframes wobble { 0%,100%{ transform:translateX(0) } 25%{ transform:translateX(-2px) } 75%{ transform:translateX(2px) } }
 </style>
 </head>
 <body>
@@ -84,7 +67,7 @@
   <div class="card" id="quiz" style="display:none">
     <div class="meta">
       <div><span class="qnum" id="qIdx">1</span>/10</div>
-      <div class="pill" id="typeBadge">정답 1개</div>
+      <div class="pill" id="typeBadge">정답 여러 개(하나만 골라도 정답)</div>
     </div>
     <div class="prompt" id="prompt">여기에 문제가 표시됩니다.</div>
     <div class="options" id="options"></div>
@@ -99,7 +82,7 @@
   <div class="card" id="result" style="display:none">
     <h3 style="margin:0 0 8px">결과</h3>
     <div class="score" id="score"></div>
-    <div id="passMsg" class="celebrate"></div>
+    <div id="passMsg" class="small" style="text-align:center; margin-top:6px"></div>
     <div class="row" style="justify-content:center; margin-top:10px">
       <button class="primary" onclick="location.reload()">새로 고침하여 새 랜덤 세트 시작</button>
     </div>
@@ -108,7 +91,7 @@
 </div>
 
 <script>
-// ===== 근육 데이터 확장 =====
+// ===== 데이터 =====
 const MUSCLES = [
   {name:"승모근(상·중·하부)", actions:["견갑 — 거상","견갑 — 하강","견갑 — 후인(내전)","견갑 — 상방회전","견갑 — 상방회전(상·하부 협응)"]},
   {name:"광배근", actions:["어깨 — 신전","어깨 — 내전","어깨 — 내회전","견갑 — 하강(보조)"]},
@@ -127,100 +110,23 @@ const MUSCLES = [
   {name:"회전근개(극상/극하/소원/견갑하)", actions:["어깨 — 외전(초기, 극상근)","어깨 — 외회전(극하/소원근)","어깨 — 내회전(견갑하근)","견관절 안정화"]},
   {name:"내전근군(장/단/대내전근 등)", actions:["고관절 — 내전","고관절 — 굴곡(보조)","고관절 — 외회전(일부)"]},
 ];
-
-// 추가적인 '오답/교란' 풀을 위해, 실제로 쓰이지는 않지만 다양성을 늘릴 수 있는 일반 동작 용어
 const EXTRA_ACTIONS = [
-  "어깨 — 관절 중심 안정화(보조)",
-  "견갑 — 하방회전(보조)",
-  "몸통 — 신전(보조)",
-  "무릎 — 신전(보조)",
-  "발목 — 배측굴곡(보조)",
-  "전완 — 중립 유지(보조)",
-  "골반 — 전방경사(보조)",
-  "견갑 — 전인/후인 조절(보조)"
+  "어깨 — 관절 중심 안정화(보조)","견갑 — 하방회전(보조)","몸통 — 신전(보조)","무릎 — 신전(보조)",
+  "발목 — 배측굴곡(보조)","전완 — 중립 유지(보조)","골반 — 전방경사(보조)","견갑 — 전인/후인 조절(보조)"
 ];
-
-// 전체 보기 풀
-const ALL_ACTIONS = Array.from(new Set([
-  ...MUSCLES.flatMap(m=>m.actions),
-  ...EXTRA_ACTIONS
-]));
+const ALL_ACTIONS = Array.from(new Set([ ...MUSCLES.flatMap(m=>m.actions), ...EXTRA_ACTIONS ]));
 
 // ===== 상태/유틸 =====
 let state = { total: 10, bank: [], idx: 0, correct: 0 };
-let audioCtx = null;
-
-function norm(s){
-  return String(s)
-    .replace(/[\u200B-\u200D\uFEFF]/g,'')          // zero-width
-    .replace(/[–—-]/g,'—')                          // unify dashes
-    .replace(/[（]/g,'(').replace(/[）]/g,')')       // fullwidth to ascii
-    .replace(/\s+/g,' ').replace(/\u00A0/g,' ')     // spaces
-    .trim().toLowerCase();
-}
+function norm(s){ return String(s).replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/[–—-]/g,'—').replace(/[（]/g,'(').replace(/[）]/g,')').replace(/\s+/g,' ').replace(/\u00A0/g,' ').trim().toLowerCase(); }
 function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
 function sample(arr,k){ const c=arr.slice(); shuffle(c); return c.slice(0,Math.min(k,c.length)); }
 function uniq(arr){ const seen=new Set(); const out=[]; for(const x of arr){ const k=norm(x); if(!seen.has(k)){ seen.add(k); out.push(x);} } return out; }
 
-// ===== 소리(웹오디오) =====
-function ensureAudio(){
-  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  if(audioCtx.state === 'suspended') audioCtx.resume();
-  return audioCtx;
-}
-function beep(freq=880, dur=0.2, type='triangle', vol=0.2, delay=0){
-  const ctx = ensureAudio();
-  const t0 = ctx.currentTime + delay;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type = type; osc.frequency.setValueAtTime(freq, t0);
-  gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(vol, t0+0.02);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
-  osc.connect(gain).connect(ctx.destination);
-  osc.start(t0); osc.stop(t0 + dur + 0.05);
-}
-function chord(freqs=[523,659,784], dur=0.5, vol=0.15, delay=0){
-  freqs.forEach((f,i)=>beep(f, dur, 'sine', vol, delay + i*0.02));
-}
-function wrongBuzz(){
-  const ctx = ensureAudio();
-  const t0 = ctx.currentTime;
-  const osc = ctx.createOscillator();
-  const gain = ctx.createGain();
-  osc.type='sawtooth'; osc.frequency.setValueAtTime(180, t0);
-  gain.gain.setValueAtTime(0.001, t0);
-  gain.gain.exponentialRampToValueAtTime(0.18, t0+0.05);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t0+0.35);
-  osc.connect(gain).connect(ctx.destination);
-  osc.start(t0); osc.stop(t0+0.4);
-}
-function drumRollAndFanfare(totalScore){
-  const ctx = ensureAudio();
-  const t0 = ctx.currentTime;
-  // drum roll
-  const bufferSize = 2 * ctx.sampleRate;
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
-  const data = buffer.getChannelData(0);
-  for (let i=0; i<bufferSize; i++){ data[i] = (Math.random()*2 - 1) * (1 - i/bufferSize); }
-  const noise = ctx.createBufferSource(); noise.buffer = buffer;
-  const band = ctx.createBiquadFilter(); band.type='bandpass'; band.frequency.value=1500; band.Q.value=0.7;
-  const gain = ctx.createGain();
-  gain.gain.setValueAtTime(0.0001, t0);
-  gain.gain.exponentialRampToValueAtTime(0.2, t0+0.2);
-  gain.gain.exponentialRampToValueAtTime(0.0001, t0+1.0);
-  noise.connect(band).connect(gain).connect(ctx.destination);
-  noise.start(t0); noise.stop(t0+1.05);
-  // fanfare
-  const base = totalScore===100 ? 523 : 440;
-  chord([base, base*5/4, base*3/2], 0.7, 0.2, 0.9);
-  chord([base*2, base*2*5/4, base*2*3/2], 0.6, 0.15, 1.0);
-}
-
 // ===== 시작/문항 생성 =====
+document.getElementById('startBtn').addEventListener('click', startQuiz);
 function startQuiz(){
-  ensureAudio(); // unlock on user gesture
-  state.bank = buildQuestions(state.total).map(q=>ensureCorrectPresent(q));
+  state.bank = buildQuestions(state.total).map(q=>ensureTruthPresent(q));
   state.idx = 0; state.correct = 0;
   document.getElementById('intro').style.display='none';
   document.getElementById('quiz').style.display='block';
@@ -232,71 +138,60 @@ function buildQuestions(n){
   return pick.map(m => makeMuscleQuestion(m));
 }
 function makeMuscleQuestion(m){
+  const truth = new Set(m.actions); // ✅ 진짜 정답(전체 작용)
   const acts = m.actions.slice();
-  const k = (acts.length >= 2 && Math.random()<0.5) ? 2 : 1; // 복수정답 비율 살짝 상승
-  const correctArr = sample(acts, k);
-  const correct = new Set(correctArr);
+  // 화면에 노출할 '대표 정답'은 1~3개만 sample (설명용), 채점은 truth 전체로
+  const k = Math.min(3, Math.max(1, Math.floor(Math.random()*3)+1));
+  const showCorrectArr = sample(acts, Math.min(k, acts.length));
   const optionCount = (Math.random()<0.5 ? 4 : 5);
 
-  // 정답 먼저 포함
-  let options = correctArr.slice();
-
-  // 오답 풀을 크게 확장: 동일 관절군/타 관절군 혼합
-  const pool = ALL_ACTIONS.filter(a => !correct.has(a));
-  // 동일 관절 우선 추출
-  const jointKey = acts[0].split('—')[0].trim(); // "어깨 ", "고관절 " 등
+  // 보기 구성: 정답 일부 + 다양한 오답
+  let options = showCorrectArr.slice();
+  const pool = ALL_ACTIONS.filter(a => !truth.has(a));
+  const jointKey = acts[0].split('—')[0].trim();
   const sameJoint = pool.filter(a => a.startsWith(jointKey));
   const otherJoint = pool.filter(a => !a.startsWith(jointKey));
-
-  let distractors = uniq([
-    ...sample(sameJoint, optionCount * 2),
-    ...sample(otherJoint, optionCount * 2)
-  ]);
+  let distractors = uniq([ ...sample(sameJoint, optionCount * 2), ...sample(otherJoint, optionCount * 2) ]);
 
   for(const d of distractors){
     if(options.length >= optionCount) break;
     if(!options.map(norm).includes(norm(d))) options.push(d);
   }
-  // 아직 부족하면 전체 풀에서 채우기
   let idx=0;
   while(options.length < optionCount && idx < pool.length){
     const cand = pool[idx++];
     if(!options.map(norm).includes(norm(cand))) options.push(cand);
   }
-
+  options = uniq(options);
+  // 만약 전체 truth 중 옵션에 포함된 정답이 0개라면 강제 삽입
+  const truthNorm = new Set([...truth].map(norm));
+  if(!options.some(o=>truthNorm.has(norm(o)))) options.push(acts[0]);
   options = shuffle(options);
+
   const explain = `<b>${m.name}</b>의 대표 작용<br>• ${m.actions.join("<br>• ")}`;
-  return { muscle:m.name, options, correct, multi:(k>1), explain };
+  return { muscle:m.name, options, truth, explain };
 }
-function ensureCorrectPresent(q){
-  const correctNorm = new Set([...q.correct].map(norm));
-  const has = q.options.some(o => correctNorm.has(norm(o)));
-  if(!has){
-    const rep = [...q.correct][0];
-    if(q.options.length>0) q.options[q.options.length-1] = rep;
-    else q.options = [rep];
-    q.options = uniq(q.options);
-    q.options = shuffle(q.options);
+function ensureTruthPresent(q){
+  const truthNorm = new Set([...q.truth].map(norm));
+  if(!q.options.some(o=>truthNorm.has(norm(o)))){
+    q.options.push([...q.truth][0]);
   }
+  q.options = uniq(shuffle(q.options));
   return q;
 }
 
 // ===== 렌더 & 채점 =====
-document.getElementById('startBtn').addEventListener('click', startQuiz);
-
 function render(){
   const q = state.bank[state.idx];
   document.getElementById('qIdx').textContent = state.idx+1;
-  document.getElementById('typeBadge').textContent = q.multi ? "정답 여러 개(하나만 골라도 정답)" : "정답 1개";
   const prompt = document.getElementById('prompt');
   const optWrap = document.getElementById('options'); optWrap.innerHTML='';
 
-  prompt.innerHTML = `근육: <b>${q.muscle}</b><br><span class="small">해당 근육이 담당하는 <b>관절 — 동작</b>을 ${q.multi? "하나 이상": "하나"} 고르세요.</span>`;
+  prompt.innerHTML = `근육: <b>${q.muscle}</b><br><span class="small">해당 근육이 담당하는 <b>관절 — 동작</b>을 하나 이상 고르세요. (하나만 맞아도 정답)</span>`;
 
   q.options.forEach((txt)=>{
     const div = document.createElement('label'); div.className='opt';
     const inp = document.createElement('input'); inp.type='checkbox'; inp.name='opt'; inp.value=txt;
-    inp.addEventListener('change', ()=>{ if(!q.multi){ document.querySelectorAll('input[name="opt"]').forEach(el=>{ if(el!==inp) el.checked=false; }); } });
     const span = document.createElement('span'); span.textContent = txt;
     div.appendChild(inp); div.appendChild(span); optWrap.appendChild(div);
   });
@@ -312,39 +207,27 @@ document.getElementById('submitBtn').addEventListener('click', ()=>{
   const chosen = Array.from(document.querySelectorAll('input[name="opt"]:checked')).map(x=>x.value);
   if(chosen.length===0){ alert('하나 이상 선택해주세요.'); return; }
   const chosenNorm = new Set(chosen.map(norm));
-  const correctNorm = new Set([...q.correct].map(norm));
+  const truthNorm = new Set([...q.truth].map(norm));
 
-  let isCorrect = false;
-  if(!q.multi){
-    isCorrect = (chosenNorm.size===1) && correctNorm.has([...chosenNorm][0]);
-  }else{
-    isCorrect = [...chosenNorm].every(x=>correctNorm.has(x)); // 부분정답 인정
-  }
-  if(isCorrect) state.correct++;
+  // ✅ 하나라도 진짜 정답(truth)에 포함되면 정답
+  const anyTrue = [...chosenNorm].some(x=>truthNorm.has(x));
+  if(anyTrue) state.correct++;
 
   document.querySelectorAll('.opt').forEach(div=>{
     const val = norm(div.querySelector('input').value);
-    const isTrue = correctNorm.has(val);
+    const isTrue = truthNorm.has(val);
     const picked = chosenNorm.has(val);
     if(isTrue) div.classList.add('correct');
     if(picked && !isTrue) div.classList.add('wrong');
     div.querySelector('input').disabled = true;
   });
 
-  document.getElementById('feedback').textContent = isCorrect ? "정답! 잘했어요 👏" : "오답 😅 정답 표시를 확인하세요.";
+  document.getElementById('feedback').textContent = anyTrue ? "정답! 잘했어요 👏" : "오답 😅 정답 표시를 확인하세요.";
   const ex = document.getElementById('explain'); ex.innerHTML = q.explain; ex.style.display='block';
   document.getElementById('submitBtn').style.display='none';
   document.getElementById('nextBtn').style.display='inline-flex';
 
-  if(isCorrect){ 
-    // fun sound & small confetti
-    beep(1046,0.15,'triangle',0.15,0);
-    beep(1318,0.15,'triangle',0.12,0.12);
-    beep(1568,0.2,'triangle',0.10,0.22);
-    triggerConfetti(1);
-  } else {
-    wrongBuzz();
-  }
+  if(anyTrue){ fireDing(); triggerConfetti(1); } else { buzz(); }
 });
 
 document.getElementById('nextBtn').addEventListener('click', ()=>{
@@ -356,78 +239,47 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
 function showResult(){
   document.getElementById('quiz').style.display='none';
   document.getElementById('result').style.display='block';
-  const points = state.correct * 10; // 1문제=10점
+  const points = state.correct * 10;
   const pct = Math.round(100*state.correct/state.total);
   document.getElementById('score').textContent = `정답 ${state.correct} / ${state.total} → ${points}점 (${pct}%)`;
 
   const msgEl = document.getElementById('passMsg');
   if(points === 100){
-    msgEl.className = 'celebrate rainbow';
-    msgEl.innerHTML = "🏆 당신은 근육 마스터!!!! 🏆<br>환상적인 집중력과 기억력으로 완벽 정복! 💪🎉🔥";
+    msgEl.innerHTML = "<b>🏆 당신은 근육 마스터!!!! 🏆</b><br>환상적인 집중력과 기억력으로 완벽 정복! 💪🎉🔥";
   } else if(points >= 90){
-    msgEl.className = 'celebrate glow90';
     msgEl.innerHTML = "🌟 거의 완벽! 근육 박사 근처까지 왔어요! 조금만 더 가면 마스터! 👏👏";
   } else if(points >= 70){
-    msgEl.className = 'celebrate glow70';
     msgEl.innerHTML = "🎯 좋아요! 기본기를 확실히 다졌어요. 영진쌤께 자랑스럽게 보여주세요! 💙";
   } else if(points >= 61){
-    msgEl.className = 'celebrate glow65';
     msgEl.innerHTML = "⚡ 한 걸음만 더! 곧 70점 돌파! 다시 도전해볼까요? 🔥";
   } else {
-    msgEl.className = 'celebrate glow60';
     msgEl.innerHTML = "💥 아직 근육이 깨어나지 않았어요! 다시 풀어서 <b>70점 이상</b> 맞을 때까지 도전! 화이팅!! 💪🔥";
   }
 
-  drumRollAndFanfare(points);
-  const mult = (points===100) ? 2 : 1.3;
-  triggerConfetti(mult);
-
-  const items = state.bank.map((q,i)=>{
-    const correctList = [...q.correct].join(", ");
-    return `<li><b>${i+1}. ${q.muscle}</b> — 정답: ${correctList}</li>`;
-  }).join("");
+  fanfare(points);
+  const items = state.bank.map((q,i)=>`<li><b>${i+1}. ${q.muscle}</b> — 정답: ${[...q.truth].join(", ")}</li>`).join("");
   document.getElementById('summary').innerHTML = `<b>정답 해설</b><ul>${items}</ul>`;
 }
 
-// ===== 축하 콘페티 =====
-const confettiCanvas = document.getElementById('confettiCanvas');
-const ctx = confettiCanvas.getContext('2d');
-function resizeCanvas(){ confettiCanvas.width = window.innerWidth; confettiCanvas.height = window.innerHeight; }
-window.addEventListener('resize', resizeCanvas); resizeCanvas();
-let confettiParticles = [];
-function createConfetti(x,y,count=80){
-  for(let i=0;i<count;i++){
-    confettiParticles.push({
-      x, y,
-      vx: (Math.random()-0.5)*9,
-      vy: (Math.random()-1.5)*9,
-      size: Math.random()*6+4,
-      color: `hsl(${Math.floor(Math.random()*360)},80%,60%)`,
-      life: 110 + Math.random()*50
-    });
-  }
+// ===== 사운드 & 콘페티 =====
+let audioCtx;
+function ensureAudio(){ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx;}
+function tone(f=880,d=0.2,t='triangle',v=0.2,delay=0){ const c=ensureAudio(); const start=c.currentTime+delay; const o=c.createOscillator(); const g=c.createGain(); o.type=t; o.frequency.setValueAtTime(f,start); g.gain.setValueAtTime(0.0001,start); g.gain.exponentialRampToValueAtTime(v,start+0.02); g.gain.exponentialRampToValueAtTime(0.0001,start+d); o.connect(g).connect(c.destination); o.start(start); o.stop(start+d+0.05); }
+function fireDing(){ tone(1046,0.15,'triangle',0.15,0); tone(1318,0.15,'triangle',0.12,0.12); tone(1568,0.2,'triangle',0.10,0.22); }
+function buzz(){ const c=ensureAudio(); const t0=c.currentTime; const o=c.createOscillator(); const g=c.createGain(); o.type='sawtooth'; o.frequency.setValueAtTime(180,t0); g.gain.setValueAtTime(0.001,t0); g.gain.exponentialRampToValueAtTime(0.18,t0+0.05); g.gain.exponentialRampToValueAtTime(0.0001,t0+0.35); o.connect(g).connect(c.destination); o.start(t0); o.stop(t0+0.4); }
+function fanfare(score){ const c=ensureAudio(); const t0=c.currentTime;
+  // drum roll
+  const buffer=c.createBuffer(1,2*c.sampleRate,c.sampleRate); const data=buffer.getChannelData(0);
+  for(let i=0;i<data.length;i++){ data[i]=(Math.random()*2-1)*(1-i/data.length); }
+  const noise=c.createBufferSource(); noise.buffer=buffer; const bp=c.createBiquadFilter(); bp.type='bandpass'; bp.frequency.value=1500; bp.Q.value=0.7; const g=c.createGain(); g.gain.setValueAtTime(0.0001,t0); g.gain.exponentialRampToValueAtTime(0.2,t0+0.2); g.gain.exponentialRampToValueAtTime(0.0001,t0+1.0); noise.connect(bp).connect(g).connect(c.destination); noise.start(t0); noise.stop(t0+1.05);
+  const base=score===100?523:440; tone(base,0.7,'sine',0.2,0.9); tone(base*5/4,0.7,'sine',0.2,0.92); tone(base*3/2,0.7,'sine',0.2,0.94); tone(base*2,0.6,'sine',0.15,1.0); tone(base*2*5/4,0.6,'sine',0.15,1.02); tone(base*2*3/2,0.6,'sine',0.15,1.04);
 }
-function updateConfetti(){
-  ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
-  let alive = [];
-  for(const p of confettiParticles){
-    p.x += p.vx; p.y += p.vy; p.vy += 0.22; p.life -= 1;
-    ctx.fillStyle = p.color;
-    ctx.fillRect(p.x, p.y, p.size, p.size*0.6);
-    if(p.life>0 && p.y < confettiCanvas.height+60) alive.push(p);
-  }
-  confettiParticles = alive;
-  if(confettiParticles.length>0) requestAnimationFrame(updateConfetti);
-}
-function triggerConfetti(mult=1){
-  const bursts = Math.max(1, Math.floor(3*mult));
-  for(let b=0;b<bursts;b++){
-    const x = window.innerWidth/2 + (Math.random()-0.5)*250;
-    const y = window.innerHeight/3 + (Math.random()-0.5)*100;
-    createConfetti(x,y, Math.floor(80*mult));
-  }
-  updateConfetti();
-}
+const confettiCanvas=document.getElementById('confettiCanvas'); const ctx=confettiCanvas.getContext('2d');
+function resizeCanvas(){ confettiCanvas.width=window.innerWidth; confettiCanvas.height=window.innerHeight; } window.addEventListener('resize', resizeCanvas); resizeCanvas();
+let confettiParticles=[];
+function createConfetti(x,y,count=80){ for(let i=0;i<count;i++){ confettiParticles.push({x,y,vx:(Math.random()-0.5)*9,vy:(Math.random()-1.5)*9,size:Math.random()*6+4,color:`hsl(${Math.floor(Math.random()*360)},80%,60%)`,life:110+Math.random()*50}); } }
+function updateConfetti(){ ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); let alive=[]; for(const p of confettiParticles){ p.x+=p.vx; p.y+=p.vy; p.vy+=0.22; p.life-=1; ctx.fillStyle=p.color; ctx.fillRect(p.x,p.y,p.size,p.size*0.6); if(p.life>0 && p.y<confettiCanvas.height+60) alive.push(p);} confettiParticles=alive; if(confettiParticles.length>0) requestAnimationFrame(updateConfetti); }
+function triggerConfetti(mult=1){ const bursts=Math.max(1,Math.floor(3*mult)); for(let b=0;b<bursts;b++){ const x=window.innerWidth/2+(Math.random()-0.5)*250; const y=window.innerHeight/3+(Math.random()-0.5)*100; createConfetti(x,y,Math.floor(80*mult)); } updateConfetti(); }
 </script>
 </body>
 </html>
