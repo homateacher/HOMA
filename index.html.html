@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>호마맨의 체육탐구 근육 문제풀이 — 휘향찬란 칭찬 & 사운드</title>
+<style>
+  :root{
+    --bg:#f7fafc; --ink:#111827; --muted:#6b7280; --card:#ffffff; --border:#e5e7eb;
+    --accent:#2563eb; --ok:#16a34a; --bad:#ef4444; --hint:#0ea5e9;
+    --fs-base: 16px;
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{
+    margin:0; font-family:Pretendard,"Noto Sans KR",ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    font-size:var(--fs-base);
+    background: radial-gradient(900px 600px at 20% -10%, #e0f2fe 0%, var(--bg) 40%) fixed;
+    color:var(--ink); line-height:1.65;
+    display:flex; flex-direction:column; align-items:center;
+    -webkit-text-size-adjust:100%;
+  }
+  header{width:100%; max-width:900px; padding:20px 14px 6px}
+  h1{margin:0; font-size:clamp(20px,4.6vw,36px); line-height:1.2}
+  .app{width:100%; max-width:900px; padding:10px 12px 24px}
+  .card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px; margin-top:10px; box-shadow:0 4px 16px rgba(15,23,42,.06)}
+  .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+  button{
+    cursor:pointer;border:1px solid var(--border);background:#f8fafc;color:#111827;
+    padding:12px 14px;border-radius:12px; font-size:clamp(14px,3.8vw,16px);
+    -webkit-tap-highlight-color:transparent; width:auto;
+  }
+  @media (max-width:560px){ .row button{flex:1 1 100%} }
+  button.primary{background:linear-gradient(135deg, rgba(37,99,235,.10), rgba(14,165,233,.10))}
+  button[disabled]{opacity:.5;cursor:not-allowed}
+  .qnum{font-weight:700;color:#334155}
+  .prompt{font-size:clamp(16px,4.4vw,20px);margin:6px 0 10px; word-break:keep-all}
+  .options{display:grid;gap:8px}
+  @media(min-width:720px){.options{grid-template-columns:1fr 1fr}}
+  .opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:#f9fafb}
+  .opt input{margin-top:4px; transform: scale(1.15)}
+  .opt span{word-break:keep-all; overflow-wrap:anywhere}
+  .opt.correct{border-color:rgba(22,163,74,.7);box-shadow:0 0 0 2px rgba(22,163,74,.18) inset;background:#ecfdf5}
+  .opt.wrong{border-color:rgba(239,68,68,.7);box-shadow:0 0 0 2px rgba(239,68,68,.18) inset;background:#fef2f2}
+  .meta{display:flex;justify-content:space-between;align-items:center; gap:8px; flex-wrap:wrap}
+  .pill{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid var(--border);font-size:12px;color:#0b5394;background:#e0f2fe}
+  .explain{margin-top:10px;padding:10px;border-left:3px solid var(--hint);background:#f0f9ff;border-radius:8px; font-size:clamp(13px,3.6vw,14px)}
+  .score{font-size:clamp(28px,7vw,40px);font-weight:800;text-align:center;margin:10px 0;color:#0b5394}
+  ul{margin:6px 0 0 18px; padding-left:18px}
+  .small{font-size:clamp(12px,3.4vw,13px); color:var(--muted)}
+  #confettiCanvas{position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:9999;}
+  .prompt, .opt span, .explain, .small { word-break: keep-all; overflow-wrap: anywhere; }
+
+  /* ✨ Score-based flair */
+  .celebrate{ text-align:center; margin-top:8px; }
+  .rainbow{
+    font-weight:900;
+    font-size:clamp(28px,9vw,56px);
+    background: linear-gradient(90deg,#ff0048,#ff8a00,#ffd200,#16c60c,#00c3ff,#7a00ff);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    animation: shimmer 2s linear infinite;
+  }
+  @keyframes shimmer { to { background-position: 200% 0; } }
+  .glow90{ font-size:clamp(24px,7.5vw,48px); color:#1d4ed8; text-shadow:0 0 12px rgba(29,78,216,.4)}
+  .glow70{ font-size:clamp(22px,6.8vw,42px); color:#0ea5e9; text-shadow:0 0 10px rgba(14,165,233,.35)}
+  .glow65{ font-size:clamp(20px,6.4vw,36px); color:#f59e0b; animation: pulse 1.2s ease-in-out infinite }
+  .glow60{ font-size:clamp(20px,6vw,34px); color:#ef4444; animation: wobble .9s ease-in-out infinite }
+  @keyframes pulse { 0%,100%{ transform:scale(1)} 50%{ transform:scale(1.05)} }
+  @keyframes wobble { 0%,100%{ transform:translateX(0) } 25%{ transform:translateX(-2px) } 75%{ transform:translateX(2px) } }
+</style>
+</head>
+<body>
+<canvas id="confettiCanvas"></canvas>
+<header><h1>호마맨의 체육탐구 근육 문제풀이</h1></header>
+
+<div class="app">
+  <div class="card" id="intro">
+    <div class="row">
+      <button class="primary" id="startBtn">퀴즈 시작 (10문항)</button>
+    </div>
+    <p class="small">근육 하나가 제시되면 보기 4~5개 중 <b>해당 근육의 관절—동작</b>을 고르세요. 정답이 여러 개일 때는 <b>하나만 골라도 정답</b>으로 인정합니다.</p>
+  </div>
+
+  <div class="card" id="quiz" style="display:none">
+    <div class="meta">
+      <div><span class="qnum" id="qIdx">1</span>/10</div>
+      <div class="pill" id="typeBadge">정답 1개</div>
+    </div>
+    <div class="prompt" id="prompt">여기에 문제가 표시됩니다.</div>
+    <div class="options" id="options"></div>
+    <div class="row" style="margin-top:10px">
+      <button id="submitBtn" class="primary">제출</button>
+      <button id="nextBtn" style="display:none">다음 ▶</button>
+      <div class="small" id="feedback"></div>
+    </div>
+    <div class="explain" id="explain" style="display:none"></div>
+  </div>
+
+  <div class="card" id="result" style="display:none">
+    <h3 style="margin:0 0 8px">결과</h3>
+    <div class="score" id="score"></div>
+    <div id="passMsg" class="celebrate"></div>
+    <div class="row" style="justify-content:center; margin-top:10px">
+      <button class="primary" onclick="location.reload()">새로 고침하여 새 랜덤 세트 시작</button>
+    </div>
+    <div class="explain" id="summary" style="margin-top:12px"></div>
+  </div>
+</div>
+
+<script>
+// ===== 데이터 =====
+const MUSCLES = [
+  {name:"승모근(상·중·하부)", actions:["견갑 — 거상","견갑 — 하강","견갑 — 후인(내전)","견갑 — 상방회전"]},
+  {name:"광배근", actions:["어깨 — 신전","어깨 — 내전","어깨 — 내회전","견갑 — 하강(보조)"]},
+  {name:"햄스트링(전체)", actions:["무릎 — 굴곡","고관절 — 신전"]},
+  {name:"대퇴사두근", actions:["무릎 — 신전","고관절 — 굴곡(대퇴직근)"]},
+  {name:"비복근", actions:["발목 — 저측굴곡(발바닥굽힘)","무릎 — 굴곡(보조)"]},
+  {name:"전완근(굴근·신근)", actions:["손목 — 굴곡","손목 — 신전","전완 — 회내(일부)","전완 — 회외(일부)"]},
+  {name:"상완이두근", actions:["팔꿈치 — 굴곡","전완 — 회외","어깨 — 굴곡(보조)"]},
+  {name:"상완삼두근", actions:["팔꿈치 — 신전","어깨 — 신전(장두)","어깨 — 내전(장두)"]},
+  {name:"삼각근(전·중·후부)", actions:["어깨 — 굴곡(전부)","어깨 — 외전(중부)","어깨 — 신전(후부)","어깨 — 내회전(전부)","어깨 — 외회전(후부)","어깨 — 수평내전(전부)","어깨 — 수평외전(후부)"]},
+  {name:"복근(복직근 중심)", actions:["몸통 — 굴곡","골반 — 후방경사"]},
+  {name:"대둔근", actions:["고관절 — 신전","고관절 — 외회전","고관절 — 벌림(상부섬유)"]},
+  {name:"중둔근", actions:["고관절 — 벌림","고관절 — 내회전(전섬유)","고관절 — 신전·외회전(후섬유)"]},
+  {name:"장요근", actions:["고관절 — 굴곡","고관절 — 외회전(보조)"]},
+  {name:"전거근", actions:["견갑 — 전인(벌림)","견갑 — 상방회전","견갑 — 고정"]},
+  {name:"회전근개(극상/극하/소원/견갑하)", actions:["어깨 — 외전(초기, 극상근)","어깨 — 외회전(극하/소원근)","어깨 — 내회전(견갑하근)","견관절 안정화"]},
+];
+const ALL_ACTIONS = Array.from(new Set(MUSCLES.flatMap(m=>m.actions)));
+
+// ===== 상태/유틸 =====
+let state = { total: 10, bank: [], idx: 0, correct: 0 };
+let audioCtx = null;
+
+function norm(s){
+  return String(s)
+    .replace(/[\u200B-\u200D\uFEFF]/g,'')          // zero-width
+    .replace(/[–—-]/g,'—')                          // unify dashes
+    .replace(/[（]/g,'(').replace(/[）]/g,')')       // fullwidth to ascii
+    .replace(/\s+/g,' ').replace(/\u00A0/g,' ')     // spaces
+    .trim().toLowerCase();
+}
+function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [arr[i],arr[j]]=[arr[j],arr[i]] } return arr; }
+function sample(arr,k){ const c=arr.slice(); shuffle(c); return c.slice(0,Math.min(k,c.length)); }
+function uniq(arr){ const seen=new Set(); const out=[]; for(const x of arr){ const k=norm(x); if(!seen.has(k)){ seen.add(k); out.push(x);} } return out; }
+
+// ===== 소리(웹오디오) =====
+function ensureAudio(){
+  if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if(audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+function beep(freq=880, dur=0.2, type='triangle', vol=0.2, delay=0){
+  const ctx = ensureAudio();
+  const t0 = ctx.currentTime + delay;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = type; osc.frequency.setValueAtTime(freq, t0);
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(vol, t0+0.02);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0+dur);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t0); osc.stop(t0 + dur + 0.05);
+}
+function chord(freqs=[523,659,784], dur=0.5, vol=0.15, delay=0){
+  freqs.forEach((f,i)=>beep(f, dur, 'sine', vol, delay + i*0.02));
+}
+function wrongBuzz(){
+  const ctx = ensureAudio();
+  const t0 = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type='sawtooth'; osc.frequency.setValueAtTime(180, t0);
+  gain.gain.setValueAtTime(0.001, t0);
+  gain.gain.exponentialRampToValueAtTime(0.18, t0+0.05);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0+0.35);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t0); osc.stop(t0+0.4);
+}
+function drumRollAndFanfare(totalScore){
+  const ctx = ensureAudio();
+  const t0 = ctx.currentTime;
+  // simple noise burst as drum roll
+  const bufferSize = 2 * ctx.sampleRate;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i=0; i<bufferSize; i++){ data[i] = (Math.random()*2 - 1) * (1 - i/bufferSize); }
+  const noise = ctx.createBufferSource(); noise.buffer = buffer;
+  const band = ctx.createBiquadFilter(); band.type='bandpass'; band.frequency.value=1500; band.Q.value=0.7;
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.0001, t0);
+  gain.gain.exponentialRampToValueAtTime(0.2, t0+0.2);
+  gain.gain.exponentialRampToValueAtTime(0.0001, t0+1.0);
+  noise.connect(band).connect(gain).connect(ctx.destination);
+  noise.start(t0); noise.stop(t0+1.05);
+  // fanfare chord
+  const base = totalScore===100 ? 523 : 440; // C5 or A4
+  chord([base, base*5/4, base*3/2], 0.7, 0.2, 0.9);
+  chord([base*2, base*2*5/4, base*2*3/2], 0.6, 0.15, 1.0);
+}
+
+// ===== 시작/문항 생성 =====
+function startQuiz(){
+  ensureAudio(); // unlock on user gesture
+  state.bank = buildQuestions(state.total).map(q=>ensureCorrectPresent(q));
+  state.idx = 0; state.correct = 0;
+  document.getElementById('intro').style.display='none';
+  document.getElementById('quiz').style.display='block';
+  render();
+}
+function buildQuestions(n){
+  const ms = shuffle(MUSCLES.slice());
+  const pick = ms.slice(0, Math.min(n, ms.length));
+  return pick.map(m => makeMuscleQuestion(m));
+}
+function makeMuscleQuestion(m){
+  const acts = m.actions.slice();
+  const k = (acts.length >= 2 && Math.random()<0.45) ? 2 : 1;
+  const correctArr = sample(acts, k);
+  const correct = new Set(correctArr);
+  const optionCount = (Math.random()<0.5 ? 4 : 5);
+  let options = correctArr.slice(); // 정답 먼저
+  const pool = ALL_ACTIONS.filter(a => !correct.has(a));
+  let distractors = uniq(sample(pool, optionCount * 3));
+  for(const d of distractors){
+    if(options.length >= optionCount) break;
+    if(!options.map(norm).includes(norm(d))) options.push(d);
+  }
+  let idx=0;
+  while(options.length < optionCount && idx < pool.length){
+    const cand = pool[idx++];
+    if(!options.map(norm).includes(norm(cand))) options.push(cand);
+  }
+  options = shuffle(options);
+  const explain = `<b>${m.name}</b>의 대표 작용<br>• ${m.actions.join("<br>• ")}`;
+  return { muscle:m.name, options, correct, multi:(k>1), explain };
+}
+function ensureCorrectPresent(q){
+  const correctNorm = new Set([...q.correct].map(norm));
+  const has = q.options.some(o => correctNorm.has(norm(o)));
+  if(!has){
+    const rep = [...q.correct][0];
+    if(q.options.length>0) q.options[q.options.length-1] = rep;
+    else q.options = [rep];
+    q.options = uniq(q.options);
+    q.options = shuffle(q.options);
+  }
+  return q;
+}
+
+// ===== 렌더 & 채점 =====
+document.getElementById('startBtn').addEventListener('click', startQuiz);
+
+function render(){
+  const q = state.bank[state.idx];
+  document.getElementById('qIdx').textContent = state.idx+1;
+  document.getElementById('typeBadge').textContent = q.multi ? "정답 여러 개(하나만 골라도 정답)" : "정답 1개";
+  const prompt = document.getElementById('prompt');
+  const optWrap = document.getElementById('options'); optWrap.innerHTML='';
+
+  prompt.innerHTML = `근육: <b>${q.muscle}</b><br><span class="small">해당 근육이 담당하는 <b>관절 — 동작</b>을 ${q.multi? "하나 이상": "하나"} 고르세요.</span>`;
+
+  q.options.forEach((txt)=>{
+    const div = document.createElement('label'); div.className='opt';
+    const inp = document.createElement('input'); inp.type='checkbox'; inp.name='opt'; inp.value=txt;
+    inp.addEventListener('change', ()=>{ if(!q.multi){ document.querySelectorAll('input[name="opt"]').forEach(el=>{ if(el!==inp) el.checked=false; }); } });
+    const span = document.createElement('span'); span.textContent = txt;
+    div.appendChild(inp); div.appendChild(span); optWrap.appendChild(div);
+  });
+
+  document.getElementById('feedback').textContent='';
+  document.getElementById('explain').style.display='none';
+  document.getElementById('submitBtn').style.display='inline-flex';
+  document.getElementById('nextBtn').style.display='none';
+}
+
+document.getElementById('submitBtn').addEventListener('click', ()=>{
+  const q = state.bank[state.idx];
+  const chosen = Array.from(document.querySelectorAll('input[name="opt"]:checked')).map(x=>x.value);
+  if(chosen.length===0){ alert('하나 이상 선택해주세요.'); return; }
+  const chosenNorm = new Set(chosen.map(norm));
+  const correctNorm = new Set([...q.correct].map(norm));
+
+  let isCorrect = false;
+  if(!q.multi){
+    isCorrect = (chosenNorm.size===1) && correctNorm.has([...chosenNorm][0]);
+  }else{
+    isCorrect = [...chosenNorm].every(x=>correctNorm.has(x)); // 부분정답 인정
+  }
+  if(isCorrect) state.correct++;
+
+  document.querySelectorAll('.opt').forEach(div=>{
+    const val = norm(div.querySelector('input').value);
+    const isTrue = correctNorm.has(val);
+    const picked = chosenNorm.has(val);
+    if(isTrue) div.classList.add('correct');
+    if(picked && !isTrue) div.classList.add('wrong');
+    div.querySelector('input').disabled = true;
+  });
+
+  document.getElementById('feedback').textContent = isCorrect ? "정답! 잘했어요 👏" : "오답 😅 정답 표시를 확인하세요.";
+  const ex = document.getElementById('explain'); ex.innerHTML = q.explain; ex.style.display='block';
+  document.getElementById('submitBtn').style.display='none';
+  document.getElementById('nextBtn').style.display='inline-flex';
+
+  if(isCorrect){ 
+    // fun sound & small confetti
+    beep(1046,0.15,'triangle',0.15,0);
+    beep(1318,0.15,'triangle',0.12,0.12);
+    beep(1568,0.2,'triangle',0.10,0.22);
+    triggerConfetti(1);
+  } else {
+    wrongBuzz();
+  }
+});
+
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  state.idx++;
+  if(state.idx >= state.total){ showResult(); }
+  else { render(); }
+});
+
+function showResult(){
+  document.getElementById('quiz').style.display='none';
+  document.getElementById('result').style.display='block';
+  const points = state.correct * 10; // 1문제=10점
+  const pct = Math.round(100*state.correct/state.total);
+  document.getElementById('score').textContent = `정답 ${state.correct} / ${state.total} → ${points}점 (${pct}%)`;
+
+  // celebratory messages
+  const msgEl = document.getElementById('passMsg');
+  if(points === 100){
+    msgEl.className = 'celebrate rainbow';
+    msgEl.innerHTML = "🏆 당신은 근육 마스터!!!! 🏆<br>환상적인 집중력과 기억력으로 완벽 정복! 💪🎉🔥";
+  } else if(points >= 90){
+    msgEl.className = 'celebrate glow90';
+    msgEl.innerHTML = "🌟 거의 완벽! 근육 박사 근처까지 왔어요! 조금만 더 가면 마스터! 👏👏";
+  } else if(points >= 70){
+    msgEl.className = 'celebrate glow70';
+    msgEl.innerHTML = "🎯 좋아요! 기본기를 확실히 다졌어요. 영진쌤께 자랑스럽게 보여주세요! 💙";
+  } else if(points >= 61){
+    msgEl.className = 'celebrate glow65';
+    msgEl.innerHTML = "⚡ 한 걸음만 더! 곧 70점 돌파! 다시 도전해볼까요? 🔥";
+  } else {
+    msgEl.className = 'celebrate glow60';
+    msgEl.innerHTML = "💥 아직 근육이 깨어나지 않았어요! 다시 풀어서 <b>70점 이상</b> 맞을 때까지 도전! 화이팅!! 💪🔥";
+  }
+
+  // final sounds & big confetti
+  drumRollAndFanfare(points);
+  const mult = (points===100) ? 2 : 1.3;
+  triggerConfetti(mult);
+
+  // summary
+  const items = state.bank.map((q,i)=>{
+    const correctList = [...q.correct].join(", ");
+    return `<li><b>${i+1}. ${q.muscle}</b> — 정답: ${correctList}</li>`;
+  }).join("");
+  document.getElementById('summary').innerHTML = `<b>정답 해설</b><ul>${items}</ul>`;
+}
+
+// ===== 축하 콘페티 =====
+const confettiCanvas = document.getElementById('confettiCanvas');
+const ctx = confettiCanvas.getContext('2d');
+function resizeCanvas(){ confettiCanvas.width = window.innerWidth; confettiCanvas.height = window.innerHeight; }
+window.addEventListener('resize', resizeCanvas); resizeCanvas();
+let confettiParticles = [];
+function createConfetti(x,y,count=80){
+  for(let i=0;i<count;i++){
+    confettiParticles.push({
+      x, y,
+      vx: (Math.random()-0.5)*9,
+      vy: (Math.random()-1.5)*9,
+      size: Math.random()*6+4,
+      color: `hsl(${Math.floor(Math.random()*360)},80%,60%)`,
+      life: 110 + Math.random()*50
+    });
+  }
+}
+function updateConfetti(){
+  ctx.clearRect(0,0,confettiCanvas.width, confettiCanvas.height);
+  let alive = [];
+  for(const p of confettiParticles){
+    p.x += p.vx; p.y += p.vy; p.vy += 0.22; p.life -= 1;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, p.size, p.size*0.6);
+    if(p.life>0 && p.y < confettiCanvas.height+60) alive.push(p);
+  }
+  confettiParticles = alive;
+  if(confettiParticles.length>0) requestAnimationFrame(updateConfetti);
+}
+function triggerConfetti(mult=1){
+  const bursts = Math.max(1, Math.floor(3*mult));
+  for(let b=0;b<bursts;b++){
+    const x = window.innerWidth/2 + (Math.random()-0.5)*250;
+    const y = window.innerHeight/3 + (Math.random()-0.5)*100;
+    createConfetti(x,y, Math.floor(80*mult));
+  }
+  updateConfetti();
+}
+</script>
+</body>
+</html>
