@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>호마맨의 체육탐구 — 근육 문제풀이 & 요약정리</title>
+<title>호마맨의 체육탐구 — 문제풀이 · 요약정리 · 스트레칭&회복</title>
 <style>
   :root{
     --bg:#f7fafc; --ink:#0f172a; --muted:#64748b; --card:#ffffff; --border:#e5e7eb;
@@ -19,28 +19,16 @@
   }
   header{width:100%; max-width:1100px; padding:22px 14px 2px}
   h1{margin:0; font-size:clamp(20px,4.6vw,38px)}
-  .sub{margin:4px 0 0; color:var(--muted); font-size:clamp(12px,3.3vw,14px)}
+  .sub{margin:4px 0 0; color:#475569; font-size:clamp(12px,3.3vw,14px)}
   .app{width:100%; max-width:1100px; padding:10px 12px 28px}
-
-  /* Tabs */
   .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
-  .tab-btn{
-    border:1px solid var(--border); background:#f8fafc; color:#0f172a;
-    padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:600;
-  }
+  .tab-btn{border:1px solid var(--border); background:#f8fafc; color:#0f172a; padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:600;}
   .tab-btn.active{ background:linear-gradient(135deg, rgba(37,99,235,.14), rgba(14,165,233,.14)); border-color:#bfdbfe; }
   .panel{ display:none; }
   .panel.active{ display:block; }
-
   .card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:14px; margin-top:12px; box-shadow:0 6px 20px rgba(15,23,42,.06)}
-
-  /* Quiz */
   .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-  button{
-    cursor:pointer;border:1px solid var(--border);background:#f8fafc;color:#111827;
-    padding:12px 14px;border-radius:12px; font-size:clamp(14px,3.8vw,16px);
-    -webkit-tap-highlight-color:transparent; width:auto;
-  }
+  button{cursor:pointer;border:1px solid var(--border);background:#f8fafc;color:#111827;padding:12px 14px;border-radius:12px; font-size:clamp(14px,3.8vw,16px);-webkit-tap-highlight-color:transparent; width:auto;}
   @media (max-width:560px){ .row button{flex:1 1 100%} }
   button.primary{background:linear-gradient(135deg, rgba(37,99,235,.10), rgba(14,165,233,.10))}
   button[disabled]{opacity:.5;cursor:not-allowed}
@@ -59,11 +47,7 @@
   .score{font-size:clamp(28px,7vw,40px);font-weight:800;text-align:center;margin:10px 0;color:#0b5394}
   ul{margin:6px 0 0 18px; padding-left:18px}
   .small{font-size:clamp(12px,3.4vw,13px); color:#6b7280}
-
   #confettiCanvas{position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:9999;}
-  .prompt, .opt span, .explain, .small { word-break: keep-all; overflow-wrap: anywhere; }
-
-  /* Study guide */
   .grid{display:grid; gap:12px; grid-template-columns:1fr}
   @media(min-width:820px){ .grid{ grid-template-columns:1fr 1fr } }
   .muscle-card{padding:14px; border:1px solid var(--border); border-radius:16px; background:linear-gradient(180deg,#ffffff, #f8fafc);}
@@ -72,22 +56,33 @@
   .sec{margin-top:8px}
   .sec b{color:#0b5394}
   .list{margin:4px 0 0 18px}
+  .guide-grid{display:grid; gap:12px; grid-template-columns:1fr}
+  @media(min-width:980px){ .guide-grid{ grid-template-columns:1fr 1fr } }
+  .recovery-card{padding:14px; border:1px solid var(--border); border-radius:16px; background:linear-gradient(180deg,#ffffff, #f8fafc);}
+  .recovery-card h3{margin:0 0 8px; font-size:clamp(16px,4.4vw,20px)}
+  .pill-row{display:flex; gap:6px; flex-wrap:wrap}
+  .pill2{display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:#ecfeff; color:#155e75; border:1px solid #e5e7eb}
+  .cols{display:grid; gap:10px; grid-template-columns:1fr}
+  @media(min-width:720px){ .cols{ grid-template-columns:1fr 1fr } }
+  .box{border:1px dashed #dbeafe; background:#f8fbff; border-radius:12px; padding:10px}
+  .box b{color:#0b5394}
+  .warn{color:#b91c1c; font-weight:600}
 </style>
 </head>
 <body>
 <canvas id="confettiCanvas"></canvas>
 <header>
   <h1>호마맨의 체육탐구</h1>
-  <div class="sub">문제풀이 탭과 공부용 요약정리 탭으로 자유롭게 학습하세요 ✨</div>
+  <div class="sub">문제풀이 · 요약정리 · 스트레칭&회복 — 세 가지 방식으로 단단하게! ✨</div>
 </header>
 
 <div class="app">
   <div class="tabs">
     <button class="tab-btn active" data-tab="quiz">문제풀이</button>
     <button class="tab-btn" data-tab="study">요약정리</button>
+    <button class="tab-btn" data-tab="recovery">스트레칭 & 회복</button>
   </div>
 
-  <!-- QUIZ PANEL -->
   <section id="quiz" class="panel active">
     <div class="card" id="intro">
       <div class="row">
@@ -122,7 +117,6 @@
     </div>
   </section>
 
-  <!-- STUDY PANEL -->
   <section id="study" class="panel">
     <div class="card">
       <h2 style="margin:4px 0 8px">근육 요약 정리</h2>
@@ -130,10 +124,17 @@
       <div class="grid" id="guideGrid"></div>
     </div>
   </section>
+
+  <section id="recovery" class="panel">
+    <div class="card">
+      <h2 style="margin:4px 0 8px">스트레칭 & 회복 가이드</h2>
+      <p class="small">각 근육별로 <b>맨몸 스트레칭</b>과 <b>도구 기반(폼롤러·마사지볼)</b>을 구분해 정리했어요. <span class="warn">통증이 심하면 중단</span>하고, 5~6단계의 편안한 당김 수준에서 시행하세요.</p>
+      <div class="guide-grid" id="recoveryGrid"></div>
+    </div>
+  </section>
 </div>
 
 <script>
-// ==== Tabs ====
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
@@ -144,7 +145,6 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
   });
 });
 
-// ===== QUIZ DATA =====
 const MUSCLES = [
   {name:"승모근(상·중·하부)", actions:["견갑 — 거상","견갑 — 하강","견갑 — 후인(내전)","견갑 — 상방회전","견갑 — 상방회전(상·하부 협응)"]},
   {name:"광배근", actions:["어깨 — 신전","어깨 — 내전","어깨 — 내회전","견갑 — 하강(보조)"]},
@@ -177,10 +177,9 @@ const CONCEPT_QUESTIONS = [{
   explain: "<b>정답: 하부승모근</b><br>하부승모근은 견갑골 <b>하강·후방경사</b>에 기여하여 상부승모근 과활성·견갑 거상·전인 패턴을 억제하고, 전거근/중부승모근과 함께 라운드숄더·거북목 패턴을 교정하는 데 핵심적으로 쓰입니다."
 }];
 
-// ===== 유틸(내부적으로만 괄호 무시 채점) =====
 let state = { total: 10, bank: [], idx: 0, correct: 0 };
-function zeroWidthTrim(s){ return s.replace(/[\u200B-\u200D\uFEFF]/g,'').replace(/\u00A0/g,' '); }
-function stripParen(s){ return s.replace(/\([^)]*\)/g,''); } // 괄호 제거
+function zeroWidthTrim(s){ return s.replace(/[​-‍﻿]/g,'').replace(/ /g,' '); }
+function stripParen(s){ return s.replace(/\([^)]*\)/g,''); }
 function normAction(str){
   let s = zeroWidthTrim(String(str)).replace(/[–—-]/g,'—').replace(/[（]/g,'(').replace(/[）]/g,')');
   let parts = s.split('—').map(t=>t.trim());
@@ -195,7 +194,6 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 function sample(arr,k){ const c=arr.slice(); shuffle(c); return c.slice(0,Math.min(k,c.length)); }
 function uniq(arr){ const seen=new Set(); const out=[]; for(const x of arr){ const k=normAction(x); if(!seen.has(k)){ seen.add(k); out.push(x);} } return out; }
 
-// ===== START QUIZ =====
 document.getElementById('startBtn').addEventListener('click', startQuiz);
 function startQuiz(){
   state.bank = buildQuestions(state.total);
@@ -257,7 +255,7 @@ function render(){
     q.options.forEach(txt=>{
       const div = document.createElement('label'); div.className='opt';
       const inp = document.createElement('input'); inp.type='checkbox'; inp.name='opt'; inp.value=txt;
-      inp.addEventListener('change', ()=>{ document.querySelectorAll('input[name=\"opt\"]').forEach(el=>{ if(el!==inp) el.checked=false; }); });
+      inp.addEventListener('change', ()=>{ document.querySelectorAll('input[name="opt"]').forEach(el=>{ if(el!==inp) el.checked=false; }); });
       const span = document.createElement('span'); span.textContent = txt;
       div.appendChild(inp); div.appendChild(span); optWrap.appendChild(div);
     });
@@ -347,13 +345,13 @@ function showResult(){
   const items = state.bank.map((q,i)=>{
     const label = q.type==="concept" ? "(개념)" : "";
     const truthList = (q.type==="concept") ? [...q.truth].join(", ") : [...q.truthNorm].join(", ");
-    const stem = q.type==="concept" ? q.prompt : q.muscle;
+    const stem = (q.type==="concept") ? q.prompt : q.muscle;
     return `<li><b>${i+1}. ${stem}</b> ${label} — 정답: ${truthList}</li>`;
   }).join("");
   document.getElementById('summary').innerHTML = `<b>정답 해설</b><ul>${items}</ul>`;
 }
 
-// ===== Sounds & Confetti =====
+// audio + confetti
 let audioCtx;
 function ensureAudio(){ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx;}
 function tone(f=880,d=0.2,t='triangle',v=0.2,delay=0){ const c=ensureAudio(); const start=c.currentTime+delay; const o=c.createOscillator(); const g=c.createGain(); o.type=t; o.frequency.setValueAtTime(f,start); g.gain.setValueAtTime(0.0001,start); g.gain.exponentialRampToValueAtTime(v,start+0.02); g.gain.exponentialRampToValueAtTime(0.0001,start+d); o.connect(g).connect(c.destination); o.start(start); o.stop(start+d+0.05); }
@@ -372,122 +370,72 @@ function createConfetti(x,y,count=80){ for(let i=0;i<count;i++){ confettiParticl
 function updateConfetti(){ ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); let alive=[]; for(const p of confettiParticles){ p.x+=p.vx; p.y+=p.vy; p.vy+=0.22; p.life-=1; ctx.fillStyle=p.color; ctx.fillRect(p.x,p.y,p.size,p.size*0.6); if(p.life>0 && p.y<confettiCanvas.height+60) alive.push(p);} confettiParticles=alive; if(confettiParticles.length>0) requestAnimationFrame(updateConfetti); }
 function triggerConfetti(mult=1){ const bursts=Math.max(1,Math.floor(3*mult)); for(let b=0;b<bursts;b++){ const x=window.innerWidth/2+(Math.random()-0.5)*250; const y=window.innerHeight/3+(Math.random()-0.5)*100; createConfetti(x,y,Math.floor(80*mult)); } updateConfetti(); }
 
-// ====== STUDY GUIDE DATA ======
 const GUIDE = [
-  {
-    name:"승모근(상·중·하부)",
-    tags:["견갑거상/하강","후인","상방회전"],
+  { name:"승모근(상·중·하부)", tags:["견갑거상/하강","후인","상방회전"],
     where:"후두골·경추~흉추에서 시작하여 견갑극·쇄골 외측에 부착. 등 위쪽 큰 역삼각형 형태.",
     roles:["상부: 견갑 거상·상방회전","중부: 견갑 후인(내전)","하부: 견갑 하강·상방회전"],
-    workouts:["페이스풀/밴드 리트랙션(중부)","Y-레이즈·랫풀다운에서 하부 활성","슈러그(상부) 과다 사용 주의"]
-  },
-  {
-    name:"광배근",
-    tags:["어깨 신전","내전","내회전"],
+    workouts:["페이스풀/밴드 리트랙션(중부)","Y-레이즈·랫풀다운에서 하부 활성","슈러그(상부) 과다 사용 주의"] },
+  { name:"광배근", tags:["어깨 신전","내전","내회전"],
     where:"흉요근막·하흉추·장골능에서 시작해 상완골 결절간구에 부착. 등 하부를 넓게 덮음.",
     roles:["어깨 신전/내전/내회전","견갑 하강 보조"],
-    workouts:["랫풀다운/풀업","로우(견갑 하강+흉추 신전 유지)","스트레이트암 풀다운"]
-  },
-  {
-    name:"햄스트링",
-    tags:["무릎 굴곡","고관절 신전"],
-    where:"좌골결절(대퇴이두 단두 제외)에서 시작하여 경골/비골 후측 부착.",
+    workouts:["랫풀다운/풀업","로우(견갑 하강+흉추 신전)","스트레이트암 풀다운"] },
+  { name:"햄스트링", tags:["무릎 굴곡","고관절 신전"],
+    where:"좌골결절(대퇴이두 단두 제외)→경골/비골 후측.",
     roles:["무릎 굴곡","고관절 신전"],
-    workouts:["힙힌지 데드리프트","레그컬","노르딕 햄컬"]
-  },
-  {
-    name:"대퇴사두근",
-    tags:["무릎 신전","대퇴직근: 고관절 굴곡"],
-    where:"대퇴골 전면과 장골에서 시작해 슬개골—경골 결절로 이어짐.",
+    workouts:["힙힌지 데드리프트","레그컬","노르딕 햄컬"] },
+  { name:"대퇴사두근", tags:["무릎 신전","대퇴직근: 고관절 굴곡"],
+    where:"대퇴골 전면과 장골→슬개골—경골 결절.",
     roles:["무릎 신전(전체)","고관절 굴곡(대퇴직근)"],
-    workouts:["스쿼트/레그프레스","런지","레그익스텐션"]
-  },
-  {
-    name:"비복근",
-    tags:["발목 저측굴곡","무릎 굴곡 보조"],
-    where:"대퇴과 상부에서 시작, 아킬레스건을 통해 종골에 부착.",
+    workouts:["스쿼트/레그프레스","런지","레그익스텐션"] },
+  { name:"비복근", tags:["발목 저측굴곡","무릎 굴곡 보조"],
+    where:"대퇴과 상부→아킬레스건→종골.",
     roles:["발목 저측굴곡(발바닥굽힘)","무릎 굴곡 보조"],
-    workouts:["카프 레이즈(서서)","박스 점프 착지 시 엉치—무릎—발목 정렬 인식"]
-  },
-  {
-    name:"전완근(굴근·신근)",
-    tags:["손목 굴/신전","회내/회외 일부"],
-    where:"상완골 내·외상과에서 시작해 손목·손가락 건으로 이어짐.",
+    workouts:["카프 레이즈(서서)","박스 점프 착지 정렬 인식"] },
+  { name:"전완근(굴근·신근)", tags:["손목 굴/신전","회내/회외 일부"],
+    where:"상완골 내·외상과→손목/손가락 건.",
     roles:["손목 굴곡/신전","전완 회내/회외(일부)","손가락 굴/신전(일부)"],
-    workouts:["리스트 컬/리버스 리스트 컬","팜업·해머 컬","그립 트레이너"]
-  },
-  {
-    name:"상완이두근",
-    tags:["팔꿈치 굴곡","회외"],
-    where:"견갑골(상·하결절)에서 시작해 요골조면에 부착.",
+    workouts:["리스트 컬/리버스 리스트 컬","해머 컬","그립 트레이너"] },
+  { name:"상완이두근", tags:["팔꿈치 굴곡","회외"],
+    where:"견갑골(상·하결절)→요골조면.",
     roles:["팔꿈치 굴곡","전완 회외","어깨 굴곡 보조"],
-    workouts:["바벨/덤벨 컬","친업(회외 그립)","케이블 컬"]
-  },
-  {
-    name:"상완삼두근",
-    tags:["팔꿈치 신전"],
-    where:"견갑골 장두·상완골 외측두/내측두에서 시작하여 척골에 부착.",
+    workouts:["바벨/덤벨 컬","친업(회외 그립)","케이블 컬"] },
+  { name:"상완삼두근", tags:["팔꿈치 신전"],
+    where:"견갑골 장두·상완골 외/내측두→척골.",
     roles:["팔꿈치 신전","어깨 신전·내전(장두)"],
-    workouts:["푸시다운","스컬크러셔","딥스"]
-  },
-  {
-    name:"삼각근(전·중·후부)",
-    tags:["어깨 굴/외전/신전"],
-    where:"쇄골 외측·견봉·견갑극에서 시작하여 삼각근거친면에 부착.",
+    workouts:["푸시다운","스컬크러셔","딥스"] },
+  { name:"삼각근(전·중·후부)", tags:["어깨 굴/외전/신전"],
+    where:"쇄골 외측·견봉·견갑극→삼각근거친면.",
     roles:["전부: 굴곡·내회전·수평내전","중부: 외전","후부: 신전·외회전·수평외전"],
-    workouts:["오버헤드 프레스(전/중부)","랫럴 레이즈(중부)","리버스 플라이(후부)"]
-  },
-  {
-    name:"복근(복직근 중심)",
-    tags:["몸통 굴곡","골반 후방경사"],
-    where:"치골에서 시작해 검상돌기·늑연골에 부착(“식스팩”).",
+    workouts:["오버헤드 프레스","랫럴 레이즈","리버스 플라이"] },
+  { name:"복근(복직근 중심)", tags:["몸통 굴곡","골반 후방경사"],
+    where:"치골→검상돌기·늑연골(식스팩).",
     roles:["몸통 굴곡","골반 후방경사"],
-    workouts:["크런치/헬로우 바디업","데드버그","플랭크(코어 협응)"]
-  },
-  {
-    name:"대둔근",
-    tags:["고관절 신전","외회전"],
-    where:"장골·천골에서 시작해 대퇴골·장경인대에 부착.",
+    workouts:["크런치/바디업","데드버그","플랭크"] },
+  { name:"대둔근", tags:["고관절 신전","외회전"],
+    where:"장골·천골→대퇴골·장경인대.",
     roles:["고관절 신전","외회전","상부섬유 벌림"],
-    workouts:["힙쓰러스트","루마니안 데드리프트","스텝업"]
-  },
-  {
-    name:"중둔근",
-    tags:["고관절 벌림","보행 안정"],
-    where:"장골 외측면에서 시작해 대퇴골 대전자에 부착.",
+    workouts:["힙쓰러스트","루마니안 데드리프트","스텝업"] },
+  { name:"중둔근", tags:["고관절 벌림","보행 안정"],
+    where:"장골 외측면→대퇴골 대전자.",
     roles:["벌림","전섬유 내회전","후섬유 신전·외회전","보행 시 골반 안정화"],
-    workouts:["사이드-라잉 힙 어브덕션","몬스터 워크/클램쉘","싱글레그 RDL 균형"]
-  },
-  {
-    name:"장요근",
-    tags:["고관절 굴곡"],
-    where:"요추체·횡돌기(요근)와 장골(장골근)에서 시작, 소전자 부착.",
+    workouts:["사이드-라잉 어브덕션","몬스터 워크/클램쉘","싱글레그 RDL"] },
+  { name:"장요근", tags:["고관절 굴곡"],
+    where:"요추체·횡돌기/장골→소전자.",
     roles:["고관절 굴곡","외회전(보조)","요추 전만 유지 보조"],
-    workouts:["행잉 레그레이즈(상·중립)","마치 드릴(무릎 끌어올리기)","딥 힙 플렉서 스트레칭 병행"]
-  },
-  {
-    name:"전거근",
-    tags:["견갑 전인","상방회전"],
-    where:"늑골 1~8에서 시작해 견갑골 안쪽모서리에 부착.",
+    workouts:["행잉 레그레이즈","마치 드릴","딥 힙 플렉서 스트레치 병행"] },
+  { name:"전거근", tags:["견갑 전인","상방회전"],
+    where:"늑골 1~8→견갑골 안쪽모서리.",
     roles:["견갑 전인(벌림)","상방회전","견갑 고정(윙잉 방지)"],
-    workouts:["월슬라이드+리치","푸시업 플러스","밴드 펀치아웃"]
-  },
-  {
-    name:"회전근개(극상/극하/소원/견갑하)",
-    tags:["어깨 안정화"],
-    where:"견갑골 회전근와 주변에서 시작해 상완골 두를 둘러싸 부착.",
-    roles:["극상: 외전 초기 구간","극하·소원: 외회전","견갑하: 내회전","견관절 중심 안정화"],
-    workouts:["큐반 프레스/외회전","사이드-라잉 외회전","밴드 내회전(견갑하)"]
-  },
-  {
-    name:"내전근군(장/단/대내전근 등)",
-    tags:["고관절 내전"],
-    where:"치골·좌골에서 시작해 대퇴골 후측선에 넓게 부착.",
+    workouts:["월슬라이드+리치","푸시업 플러스","밴드 펀치아웃"] },
+  { name:"회전근개(극상/극하/소원/견갑하)", tags:["어깨 안정화"],
+    where:"견갑골 회전근와 주변→상완골 두.",
+    roles:["극상: 외전 초기","극하·소원: 외회전","견갑하: 내회전","관절 중심 안정화"],
+    workouts:["큐반 프레스","사이드-라잉 외회전","밴드 내회전"] },
+  { name:"내전근군(장/단/대내전근 등)", tags:["고관절 내전"],
+    where:"치골·좌골→대퇴골 후측선.",
     roles:["고관절 내전","굴곡·외회전 일부 섬유"],
-    workouts:["어덕션 머신","슬라이드 보드 사이드 컬","케이블 크로스-스텝 인"]
-  }
+    workouts:["어덕션 머신","슬라이드 보드 사이드 컬","케이블 크로스-스텝 인"] }
 ];
-
 function makeCard({name,tags,where,roles,workouts}){
   const tagHtml = (tags||[]).map(t=>`<span class="tag">${t}</span>`).join("");
   const rolesHtml = (roles||[]).map(r=>`<li>${r}</li>`).join("");
@@ -500,8 +448,121 @@ function makeCard({name,tags,where,roles,workouts}){
     <div class="sec"><b>추천 운동법</b><ul class="list">${workHtml}</ul></div>
   </div>`;
 }
-
 document.getElementById('guideGrid').innerHTML = GUIDE.map(makeCard).join("");
+
+const RECOVERY = [
+  { name:"승모근(상·중·하부)",
+    tags:["목·견갑 안정"],
+    bw:["상부: 좌·우 측굴 스트레칭 — 한 손으로 머리 살짝 당겨 20~30초 × 2~3세트","중부/하부: 벽슬라이드 Y/T — 8~12회 × 2세트, 견갑 후인·하강 의식"],
+    tool:["마사지볼: 상부승모 트리거포인트 20~40초 압박","폼롤러: 등 상부를 세로로 두고 상하로 8~12회"],
+    care:["스마트폰·노트북 시 시선 수평 유지, 30분마다 목·흉추 가동","거북목 교정엔 하부승모+전거근 활성화 병행"]
+  },
+  { name:"광배근",
+    tags:["어깨 내전·신전"],
+    bw:["도어웨이 라트 스트레치 — 엉덩이 뒤로 빼며 옆구리 길게 20~30초","차일드포즈 측면 리치 — 호흡과 함께 30~40초"],
+    tool:["폼롤러: 옆구리 아래 대고 천천히 8~12회 왕복","라크로스볼: 겨드랑이 안쪽 벽 압박 20~30초"],
+    care:["랫풀·풀업 전 어깨 하강 세팅, 과도한 내회전/전인 습관 교정"]
+  },
+  { name:"햄스트링",
+    tags:["무릎 굴곡 · 고관절 신전"],
+    bw:["좌전굴(앉아 햄스트링) — 허리 중립, 반동 금지 20~30초","스태틱 런지 후방다리 신전 유지 20~30초"],
+    tool:["폼롤러: 허벅지 뒤 10~15회 왕복 × 2세트","마사지볼: 좌골결절 주변 20초 점압(뼈 직접 압박 금지)"],
+    care:["운동 후 가벼운 걷기·자전거로 혈류 회복","과신전 무릎 주의, 힙힌지 패턴 훈련"]
+  },
+  { name:"대퇴사두근",
+    tags:["무릎 신전"],
+    bw:["스탠딩 쿼드 스트레치 — 무릎 모아 20~30초","프론트 런지에서 뒷다리 쿼드 늘리기 20초"],
+    tool:["폼롤러: 허벅지 앞 12~15회 왕복","마사지건: 근복부 30~60초(슬개건 직접 자극 금지)"],
+    care:["무릎 통증 시 깊은 굴곡 피하고 고관절·발목 가동성 확보"]
+  },
+  { name:"비복근",
+    tags:["발목 저측굴곡"],
+    bw:["스탠딩 카프 스트레치(무릎 펴고) 20~30초","벽 카프 스트레치(무릎 굽혀 가자미근 포커스) 20초"],
+    tool:["폼롤러: 종아리 10~15회 왕복","마사지볼: 종아리 중앙 라인 20초 점압"],
+    care:["발목 배측굴곡 제한 시 스쿼트 깊이 제한됨 — 일상에서 종종 스트레칭"]
+  },
+  { name:"전완근(굴근·신근)",
+    tags:["손목 굴/신전"],
+    bw:["팔 뻗고 손바닥 위로 젖혀 전완 굴근 스트레치 20초","반대로 손등 잡아 전완 신근 스트레치 20초"],
+    tool:["마사지볼: 전완 근막 롤링 30~40초","바이스티크(있다면): 가벼운 컴프레션 후 스트립"],
+    care:["키보드·마우스 높이 조절, 손목 중립 유지 습관"]
+  },
+  { name:"상완이두근",
+    tags:["팔꿈치 굴곡 · 회외"],
+    bw:["도어 프레임 잡고 상완 전면 늘이기 20초","벽에 손바닥 대고 팔 외회전하며 전완 전면 스트레치 20초"],
+    tool:["마사지볼: 이두 근복부 20초 압박","폼롤러: 상완 전면 8~10회 왕복"],
+    care:["과사용 시 회전근개·전완과 밸런스 훈련 병행"]
+  },
+  { name:"상완삼두근",
+    tags:["팔꿈치 신전"],
+    bw:["오버헤드 트라이셉스 스트레치 20~30초","크로스바디로 팔꿈치 당겨 후면 늘리기 20초"],
+    tool:["마사지볼: 삼두 외측두·장두 부위 20초 점압","폼롤러: 상완 후면 8~12회"],
+    care:["딥스·스컬크러셔 후 스트레칭 루틴화"]
+  },
+  { name:"삼각근(전·중·후부)",
+    tags:["어깨 굴/외전/신전"],
+    bw:["문틀 스트레치(전부) 20초","크로스바디 후면 스트레치(후부) 20초"],
+    tool:["마사지볼: 후부 삼각근·극하근 부위 벽 압박 20초","폼롤러: 측면 어깨 라인 8~10회"],
+    care:["프레스/레이즈 후 과긴장 완화, 회전근개 강화 병행"]
+  },
+  { name:"복근(복직근)",
+    tags:["몸통 굴곡"],
+    bw:["코브라 스트레치(요부 무리 주의) 15~20초","캣-카우로 가동성 확보 6~8회"],
+    tool:["폼롤러: 복직근은 직접 압박 X, 대신 늑간·복사근 주변 가볍게","마사지건: 복부 직접 사용 비권장"],
+    care:["요통 있으면 범위 축소, 호흡·브레이싱 훈련"]
+  },
+  { name:"대둔근",
+    tags:["고관절 신전"],
+    bw:["피존 스트레치(누워/앉아서 변형 가능) 20~30초","글루트 스트랩 스트레치 20초"],
+    tool:["마사지볼: 둔근 외측 트리거 20초 점압","폼롤러: 둔근 10~15회 왕복"],
+    care:["오래 앉는 습관 줄이고, 힙 익스텐션 활성화 루틴"]
+  },
+  { name:"중둔근",
+    tags:["고관절 벌림"],
+    bw:["스탠딩 사이드 리치 힙 스트레치 20초","사이드 런지 변형으로 외측선 늘리기 10~12회"],
+    tool:["마사지볼: 대전자 주변 측면 15~20초 압박","폼롤러: IT밴드 근막은 간접(통증 과도 주의)"],
+    care:["보행·스쿼트 시 무릎 안쪽 붕괴(발목 과회내) 교정"]
+  },
+  { name:"장요근",
+    tags:["고관절 굴곡"],
+    bw:["니링 힙 플렉서 스트레치 — 골반 후방경사 유지 20~30초","벽 잡고 무릎 끌어올리기 가동 8~10회"],
+    tool:["마사지볼: 장요근은 깊어 과도한 압박 금지(복부 장기 보호)","폼롤러: 대퇴직근·TFL 주변을 간접적으로 이완"],
+    care:["장시간 좌식 후 반드시 신전 스트레칭, 요추 과전만 주의"]
+  },
+  { name:"전거근",
+    tags:["견갑 전인/상방회전"],
+    bw:["월슬라이드+리치 8~10회","사방 방향 리치 6~8회"],
+    tool:["마사지볼: 겨드랑이 앞·측면 부드럽게 15초 압박","폼롤러: 흉곽 측면 근막 가볍게"],
+    care:["푸시업 플러스·리치 동작과 페어로 활성화"]
+  },
+  { name:"회전근개",
+    tags:["어깨 안정화"],
+    bw:["수건 끼고 외회전/내회전 등척 8~12회","슬리퍼 스트레치(내회전) 20초"],
+    tool:["마사지볼: 극하·소원근 벽 압박 15~20초","밴드: 가벼운 내/외회전 근지구력 12~15회"],
+    care:["통증궁(약 60~120°) 땐 범위 축소, 견갑 리듬 의식"]
+  },
+  { name:"내전근군",
+    tags:["고관절 내전"],
+    bw:["프로그 스트레치 20~30초","사이드 런지 홀드 20초"],
+    tool:["마사지볼: 내전근 근복부 15~20초 점압","폼롤러: 내측 대퇴부 8~12회"],
+    care:["사이드 스텝/어브덕션으로 균형, 급가동 시 과신장 주의"]
+  }
+];
+
+function recoveryCard(item){
+  const tagHtml = (item.tags||[]).map(t=>`<span class="pill2">${t}</span>`).join("");
+  const li = arr => (arr||[]).map(x=>`<li>${x}</li>`).join("");
+  return `<div class="recovery-card">
+    <h3>${item.name}</h3>
+    <div class="pill-row">${tagHtml}</div>
+    <div class="cols">
+      <div class="box"><b>맨몸 스트레칭</b><ul class="list">${li(item.bw)}</ul></div>
+      <div class="box"><b>도구 기반(폼롤러·마사지볼)</b><ul class="list">${li(item.tool)}</ul></div>
+    </div>
+    <div class="sec"><b>회복 & 예방법</b><ul class="list">${li(item.care)}</ul></div>
+  </div>`;
+}
+document.getElementById('recoveryGrid').innerHTML = RECOVERY.map(recoveryCard).join("");
 
 </script>
 </body>
