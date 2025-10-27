@@ -3,19 +3,44 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>호마맨의 체육탐구 근육 문제풀이 — v6</title>
+<title>호마맨의 체육탐구 — 근육 문제풀이 & 요약정리</title>
 <style>
-  :root{ --bg:#f7fafc; --ink:#111827; --muted:#6b7280; --card:#ffffff; --border:#e5e7eb; --accent:#2563eb; --ok:#16a34a; --bad:#ef4444; --hint:#0ea5e9; --fs-base: 16px; }
+  :root{
+    --bg:#f7fafc; --ink:#0f172a; --muted:#64748b; --card:#ffffff; --border:#e5e7eb;
+    --accent:#2563eb; --accent-2:#0ea5e9; --ok:#16a34a; --bad:#ef4444; --hint:#0ea5e9;
+  }
   *{box-sizing:border-box}
   html,body{height:100%}
-  body{ margin:0; font-family:Pretendard,"Noto Sans KR",ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial; font-size:var(--fs-base);
-        background: radial-gradient(900px 600px at 20% -10%, #e0f2fe 0%, var(--bg) 40%) fixed; color:var(--ink); line-height:1.65; display:flex; flex-direction:column; align-items:center; -webkit-text-size-adjust:100%; }
-  header{width:100%; max-width:900px; padding:20px 14px 6px}
-  h1{margin:0; font-size:clamp(20px,4.6vw,36px); line-height:1.2}
-  .app{width:100%; max-width:900px; padding:10px 12px 24px}
-  .card{background:var(--card); border:1px solid var(--border); border-radius:16px; padding:14px; margin-top:10px; box-shadow:0 4px 16px rgba(15,23,42,.06)}
+  body{
+    margin:0; font-family:Pretendard,"Noto Sans KR",ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial;
+    background: radial-gradient(900px 600px at 15% -10%, #e0f2fe 0%, var(--bg) 40%) fixed;
+    color:var(--ink); line-height:1.65; -webkit-text-size-adjust:100%;
+    display:flex; flex-direction:column; align-items:center;
+  }
+  header{width:100%; max-width:1100px; padding:22px 14px 2px}
+  h1{margin:0; font-size:clamp(20px,4.6vw,38px)}
+  .sub{margin:4px 0 0; color:var(--muted); font-size:clamp(12px,3.3vw,14px)}
+  .app{width:100%; max-width:1100px; padding:10px 12px 28px}
+
+  /* Tabs */
+  .tabs{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px}
+  .tab-btn{
+    border:1px solid var(--border); background:#f8fafc; color:#0f172a;
+    padding:10px 14px; border-radius:999px; cursor:pointer; font-weight:600;
+  }
+  .tab-btn.active{ background:linear-gradient(135deg, rgba(37,99,235,.14), rgba(14,165,233,.14)); border-color:#bfdbfe; }
+  .panel{ display:none; }
+  .panel.active{ display:block; }
+
+  .card{background:var(--card); border:1px solid var(--border); border-radius:18px; padding:14px; margin-top:12px; box-shadow:0 6px 20px rgba(15,23,42,.06)}
+
+  /* Quiz */
   .row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
-  button{ cursor:pointer;border:1px solid var(--border);background:#f8fafc;color:#111827; padding:12px 14px;border-radius:12px; font-size:clamp(14px,3.8vw,16px); -webkit-tap-highlight-color:transparent; width:auto; }
+  button{
+    cursor:pointer;border:1px solid var(--border);background:#f8fafc;color:#111827;
+    padding:12px 14px;border-radius:12px; font-size:clamp(14px,3.8vw,16px);
+    -webkit-tap-highlight-color:transparent; width:auto;
+  }
   @media (max-width:560px){ .row button{flex:1 1 100%} }
   button.primary{background:linear-gradient(135deg, rgba(37,99,235,.10), rgba(14,165,233,.10))}
   button[disabled]{opacity:.5;cursor:not-allowed}
@@ -34,50 +59,92 @@
   .score{font-size:clamp(28px,7vw,40px);font-weight:800;text-align:center;margin:10px 0;color:#0b5394}
   ul{margin:6px 0 0 18px; padding-left:18px}
   .small{font-size:clamp(12px,3.4vw,13px); color:#6b7280}
+
   #confettiCanvas{position:fixed; left:0; top:0; width:100%; height:100%; pointer-events:none; z-index:9999;}
   .prompt, .opt span, .explain, .small { word-break: keep-all; overflow-wrap: anywhere; }
+
+  /* Study guide */
+  .grid{display:grid; gap:12px; grid-template-columns:1fr}
+  @media(min-width:820px){ .grid{ grid-template-columns:1fr 1fr } }
+  .muscle-card{padding:14px; border:1px solid var(--border); border-radius:16px; background:linear-gradient(180deg,#ffffff, #f8fafc);}
+  .muscle-card h3{margin:0 0 4px; font-size:clamp(16px,4.4vw,20px)}
+  .tag{display:inline-block; font-size:12px; padding:2px 8px; border-radius:999px; background:#eef2ff; color:#3730a3; border:1px solid #e5e7eb; margin-right:6px}
+  .sec{margin-top:8px}
+  .sec b{color:#0b5394}
+  .list{margin:4px 0 0 18px}
 </style>
 </head>
 <body>
 <canvas id="confettiCanvas"></canvas>
-<header><h1>호마맨의 체육탐구 근육 문제풀이</h1></header>
+<header>
+  <h1>호마맨의 체육탐구</h1>
+  <div class="sub">문제풀이 탭과 공부용 요약정리 탭으로 자유롭게 학습하세요 ✨</div>
+</header>
 
 <div class="app">
-  <div class="card" id="intro">
-    <div class="row">
-      <button class="primary" id="startBtn">퀴즈 시작 (10문항)</button>
-    </div>
-    <p class="small">근육 하나가 제시되면 보기 4~5개 중 <b>해당 근육의 관절—동작</b>을 고르세요. 정답이 여러 개일 때는 <b>하나만 골라도 정답</b>으로 인정합니다.</p>
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="quiz">문제풀이</button>
+    <button class="tab-btn" data-tab="study">요약정리</button>
   </div>
 
-  <div class="card" id="quiz" style="display:none">
-    <div class="meta">
-      <div><span class="qnum" id="qIdx">1</span>/10</div>
-      <div class="pill" id="typeBadge">정답 여러 개(하나만 골라도 정답)</div>
+  <!-- QUIZ PANEL -->
+  <section id="quiz" class="panel active">
+    <div class="card" id="intro">
+      <div class="row">
+        <button class="primary" id="startBtn">퀴즈 시작 (10문항)</button>
+      </div>
+      <p class="small">근육 하나가 제시되면 보기 4~5개 중 <b>해당 근육의 관절—동작</b>을 고르세요. 정답이 여러 개일 때는 <b>하나만 골라도 정답</b>으로 인정합니다.</p>
     </div>
-    <div class="prompt" id="prompt">여기에 문제가 표시됩니다.</div>
-    <div class="options" id="options"></div>
-    <div class="row" style="margin-top:10px">
-      <button id="submitBtn" class="primary">제출</button>
-      <button id="nextBtn" style="display:none">다음 ▶</button>
-      <div class="small" id="feedback"></div>
-    </div>
-    <div class="explain" id="explain" style="display:none"></div>
-  </div>
 
-  <div class="card" id="result" style="display:none">
-    <h3 style="margin:0 0 8px">결과</h3>
-    <div class="score" id="score"></div>
-    <div id="passMsg" class="small" style="text-align:center; margin-top:6px"></div>
-    <div class="row" style="justify-content:center; margin-top:10px">
-      <button class="primary" onclick="location.reload()">새로 고침하여 새 랜덤 세트 시작</button>
+    <div class="card" id="quizCard" style="display:none">
+      <div class="meta">
+        <div><span class="qnum" id="qIdx">1</span>/10</div>
+        <div class="pill" id="typeBadge">정답 여러 개(하나만 골라도 정답)</div>
+      </div>
+      <div class="prompt" id="prompt">여기에 문제가 표시됩니다.</div>
+      <div class="options" id="options"></div>
+      <div class="row" style="margin-top:10px">
+        <button id="submitBtn" class="primary">제출</button>
+        <button id="nextBtn" style="display:none">다음 ▶</button>
+        <div class="small" id="feedback"></div>
+      </div>
+      <div class="explain" id="explain" style="display:none"></div>
     </div>
-    <div class="explain" id="summary" style="margin-top:12px"></div>
-  </div>
+
+    <div class="card" id="result" style="display:none">
+      <h3 style="margin:0 0 8px">결과</h3>
+      <div class="score" id="score"></div>
+      <div id="passMsg" class="small" style="text-align:center; margin-top:6px"></div>
+      <div class="row" style="justify-content:center; margin-top:10px">
+        <button class="primary" onclick="location.reload()">새로 고침하여 새 랜덤 세트 시작</button>
+      </div>
+      <div class="explain" id="summary" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <!-- STUDY PANEL -->
+  <section id="study" class="panel">
+    <div class="card">
+      <h2 style="margin:4px 0 8px">근육 요약 정리</h2>
+      <p class="small">수업에서 다룬 근육들에 대해 <b>위치</b>, <b>대표 역할</b>, <b>추천 운동법</b>을 한눈에 정리했어요.</p>
+      <div class="grid" id="guideGrid"></div>
+    </div>
+  </section>
 </div>
 
 <script>
-// ===== 데이터 =====
+// ==== Tabs ====
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const tab = btn.getAttribute('data-tab');
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    document.getElementById(tab).classList.add('active');
+  });
+});
+
+// ===== QUIZ DATA =====
 const MUSCLES = [
   {name:"승모근(상·중·하부)", actions:["견갑 — 거상","견갑 — 하강","견갑 — 후인(내전)","견갑 — 상방회전","견갑 — 상방회전(상·하부 협응)"]},
   {name:"광배근", actions:["어깨 — 신전","어깨 — 내전","어깨 — 내회전","견갑 — 하강(보조)"]},
@@ -102,7 +169,6 @@ const EXTRA_ACTIONS = [
 ];
 const ALL_ACTIONS = Array.from(new Set([ ...MUSCLES.flatMap(m=>m.actions), ...EXTRA_ACTIONS ]));
 
-// ===== 개념 문항(거북목) =====
 const CONCEPT_QUESTIONS = [{
   type: "concept",
   prompt: "거북목(Forward head posture) 예방·교정에 핵심적으로 도움이 되는 승모근의 부분은?",
@@ -129,19 +195,19 @@ function shuffle(arr){ for(let i=arr.length-1;i>0;i--){ const j=Math.floor(Math.
 function sample(arr,k){ const c=arr.slice(); shuffle(c); return c.slice(0,Math.min(k,c.length)); }
 function uniq(arr){ const seen=new Set(); const out=[]; for(const x of arr){ const k=normAction(x); if(!seen.has(k)){ seen.add(k); out.push(x);} } return out; }
 
-// ===== 시작/문항 생성 =====
+// ===== START QUIZ =====
 document.getElementById('startBtn').addEventListener('click', startQuiz);
 function startQuiz(){
   state.bank = buildQuestions(state.total);
   state.idx = 0; state.correct = 0;
   document.getElementById('intro').style.display='none';
-  document.getElementById('quiz').style.display='block';
+  document.getElementById('quizCard').style.display='block';
   render();
 }
 function buildQuestions(n){
   const regular = buildRegularQuestions(Math.max(0, n-1));
   const concept = sample(CONCEPT_QUESTIONS, 1);
-  const pos = Math.floor(Math.random()*(regular.length+1));
+  const pos = Math.floor(Math.random()* (regular.length+1));
   return regular.slice(0,pos).concat(concept, regular.slice(pos));
 }
 function buildRegularQuestions(n){
@@ -179,7 +245,6 @@ function makeMuscleQuestion(m){
   return { type:"regular", muscle:m.name, options, truthNorm, explain };
 }
 
-// ===== 렌더 & 채점 =====
 function render(){
   const q = state.bank[state.idx];
   document.getElementById('qIdx').textContent = state.idx+1;
@@ -259,7 +324,7 @@ document.getElementById('nextBtn').addEventListener('click', ()=>{
 });
 
 function showResult(){
-  document.getElementById('quiz').style.display='none';
+  document.getElementById('quizCard').style.display='none';
   document.getElementById('result').style.display='block';
   const points = state.correct * 10;
   const pct = Math.round(100*state.correct/state.total);
@@ -288,7 +353,7 @@ function showResult(){
   document.getElementById('summary').innerHTML = `<b>정답 해설</b><ul>${items}</ul>`;
 }
 
-// ===== 사운드 & 콘페티 =====
+// ===== Sounds & Confetti =====
 let audioCtx;
 function ensureAudio(){ if(!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if(audioCtx.state==='suspended') audioCtx.resume(); return audioCtx;}
 function tone(f=880,d=0.2,t='triangle',v=0.2,delay=0){ const c=ensureAudio(); const start=c.currentTime+delay; const o=c.createOscillator(); const g=c.createGain(); o.type=t; o.frequency.setValueAtTime(f,start); g.gain.setValueAtTime(0.0001,start); g.gain.exponentialRampToValueAtTime(v,start+0.02); g.gain.exponentialRampToValueAtTime(0.0001,start+d); o.connect(g).connect(c.destination); o.start(start); o.stop(start+d+0.05); }
@@ -306,6 +371,138 @@ let confettiParticles=[];
 function createConfetti(x,y,count=80){ for(let i=0;i<count;i++){ confettiParticles.push({x,y,vx:(Math.random()-0.5)*9,vy:(Math.random()-1.5)*9,size:Math.random()*6+4,color:`hsl(${Math.floor(Math.random()*360)},80%,60%)`,life:110+Math.random()*50}); } }
 function updateConfetti(){ ctx.clearRect(0,0,confettiCanvas.width,confettiCanvas.height); let alive=[]; for(const p of confettiParticles){ p.x+=p.vx; p.y+=p.vy; p.vy+=0.22; p.life-=1; ctx.fillStyle=p.color; ctx.fillRect(p.x,p.y,p.size,p.size*0.6); if(p.life>0 && p.y<confettiCanvas.height+60) alive.push(p);} confettiParticles=alive; if(confettiParticles.length>0) requestAnimationFrame(updateConfetti); }
 function triggerConfetti(mult=1){ const bursts=Math.max(1,Math.floor(3*mult)); for(let b=0;b<bursts;b++){ const x=window.innerWidth/2+(Math.random()-0.5)*250; const y=window.innerHeight/3+(Math.random()-0.5)*100; createConfetti(x,y,Math.floor(80*mult)); } updateConfetti(); }
+
+// ====== STUDY GUIDE DATA ======
+const GUIDE = [
+  {
+    name:"승모근(상·중·하부)",
+    tags:["견갑거상/하강","후인","상방회전"],
+    where:"후두골·경추~흉추에서 시작하여 견갑극·쇄골 외측에 부착. 등 위쪽 큰 역삼각형 형태.",
+    roles:["상부: 견갑 거상·상방회전","중부: 견갑 후인(내전)","하부: 견갑 하강·상방회전"],
+    workouts:["페이스풀/밴드 리트랙션(중부)","Y-레이즈·랫풀다운에서 하부 활성","슈러그(상부) 과다 사용 주의"]
+  },
+  {
+    name:"광배근",
+    tags:["어깨 신전","내전","내회전"],
+    where:"흉요근막·하흉추·장골능에서 시작해 상완골 결절간구에 부착. 등 하부를 넓게 덮음.",
+    roles:["어깨 신전/내전/내회전","견갑 하강 보조"],
+    workouts:["랫풀다운/풀업","로우(견갑 하강+흉추 신전 유지)","스트레이트암 풀다운"]
+  },
+  {
+    name:"햄스트링",
+    tags:["무릎 굴곡","고관절 신전"],
+    where:"좌골결절(대퇴이두 단두 제외)에서 시작하여 경골/비골 후측 부착.",
+    roles:["무릎 굴곡","고관절 신전"],
+    workouts:["힙힌지 데드리프트","레그컬","노르딕 햄컬"]
+  },
+  {
+    name:"대퇴사두근",
+    tags:["무릎 신전","대퇴직근: 고관절 굴곡"],
+    where:"대퇴골 전면과 장골에서 시작해 슬개골—경골 결절로 이어짐.",
+    roles:["무릎 신전(전체)","고관절 굴곡(대퇴직근)"],
+    workouts:["스쿼트/레그프레스","런지","레그익스텐션"]
+  },
+  {
+    name:"비복근",
+    tags:["발목 저측굴곡","무릎 굴곡 보조"],
+    where:"대퇴과 상부에서 시작, 아킬레스건을 통해 종골에 부착.",
+    roles:["발목 저측굴곡(발바닥굽힘)","무릎 굴곡 보조"],
+    workouts:["카프 레이즈(서서)","박스 점프 착지 시 엉치—무릎—발목 정렬 인식"]
+  },
+  {
+    name:"전완근(굴근·신근)",
+    tags:["손목 굴/신전","회내/회외 일부"],
+    where:"상완골 내·외상과에서 시작해 손목·손가락 건으로 이어짐.",
+    roles:["손목 굴곡/신전","전완 회내/회외(일부)","손가락 굴/신전(일부)"],
+    workouts:["리스트 컬/리버스 리스트 컬","팜업·해머 컬","그립 트레이너"]
+  },
+  {
+    name:"상완이두근",
+    tags:["팔꿈치 굴곡","회외"],
+    where:"견갑골(상·하결절)에서 시작해 요골조면에 부착.",
+    roles:["팔꿈치 굴곡","전완 회외","어깨 굴곡 보조"],
+    workouts:["바벨/덤벨 컬","친업(회외 그립)","케이블 컬"]
+  },
+  {
+    name:"상완삼두근",
+    tags:["팔꿈치 신전"],
+    where:"견갑골 장두·상완골 외측두/내측두에서 시작하여 척골에 부착.",
+    roles:["팔꿈치 신전","어깨 신전·내전(장두)"],
+    workouts:["푸시다운","스컬크러셔","딥스"]
+  },
+  {
+    name:"삼각근(전·중·후부)",
+    tags:["어깨 굴/외전/신전"],
+    where:"쇄골 외측·견봉·견갑극에서 시작하여 삼각근거친면에 부착.",
+    roles:["전부: 굴곡·내회전·수평내전","중부: 외전","후부: 신전·외회전·수평외전"],
+    workouts:["오버헤드 프레스(전/중부)","랫럴 레이즈(중부)","리버스 플라이(후부)"]
+  },
+  {
+    name:"복근(복직근 중심)",
+    tags:["몸통 굴곡","골반 후방경사"],
+    where:"치골에서 시작해 검상돌기·늑연골에 부착(“식스팩”).",
+    roles:["몸통 굴곡","골반 후방경사"],
+    workouts:["크런치/헬로우 바디업","데드버그","플랭크(코어 협응)"]
+  },
+  {
+    name:"대둔근",
+    tags:["고관절 신전","외회전"],
+    where:"장골·천골에서 시작해 대퇴골·장경인대에 부착.",
+    roles:["고관절 신전","외회전","상부섬유 벌림"],
+    workouts:["힙쓰러스트","루마니안 데드리프트","스텝업"]
+  },
+  {
+    name:"중둔근",
+    tags:["고관절 벌림","보행 안정"],
+    where:"장골 외측면에서 시작해 대퇴골 대전자에 부착.",
+    roles:["벌림","전섬유 내회전","후섬유 신전·외회전","보행 시 골반 안정화"],
+    workouts:["사이드-라잉 힙 어브덕션","몬스터 워크/클램쉘","싱글레그 RDL 균형"]
+  },
+  {
+    name:"장요근",
+    tags:["고관절 굴곡"],
+    where:"요추체·횡돌기(요근)와 장골(장골근)에서 시작, 소전자 부착.",
+    roles:["고관절 굴곡","외회전(보조)","요추 전만 유지 보조"],
+    workouts:["행잉 레그레이즈(상·중립)","마치 드릴(무릎 끌어올리기)","딥 힙 플렉서 스트레칭 병행"]
+  },
+  {
+    name:"전거근",
+    tags:["견갑 전인","상방회전"],
+    where:"늑골 1~8에서 시작해 견갑골 안쪽모서리에 부착.",
+    roles:["견갑 전인(벌림)","상방회전","견갑 고정(윙잉 방지)"],
+    workouts:["월슬라이드+리치","푸시업 플러스","밴드 펀치아웃"]
+  },
+  {
+    name:"회전근개(극상/극하/소원/견갑하)",
+    tags:["어깨 안정화"],
+    where:"견갑골 회전근와 주변에서 시작해 상완골 두를 둘러싸 부착.",
+    roles:["극상: 외전 초기 구간","극하·소원: 외회전","견갑하: 내회전","견관절 중심 안정화"],
+    workouts:["큐반 프레스/외회전","사이드-라잉 외회전","밴드 내회전(견갑하)"]
+  },
+  {
+    name:"내전근군(장/단/대내전근 등)",
+    tags:["고관절 내전"],
+    where:"치골·좌골에서 시작해 대퇴골 후측선에 넓게 부착.",
+    roles:["고관절 내전","굴곡·외회전 일부 섬유"],
+    workouts:["어덕션 머신","슬라이드 보드 사이드 컬","케이블 크로스-스텝 인"]
+  }
+];
+
+function makeCard({name,tags,where,roles,workouts}){
+  const tagHtml = (tags||[]).map(t=>`<span class="tag">${t}</span>`).join("");
+  const rolesHtml = (roles||[]).map(r=>`<li>${r}</li>`).join("");
+  const workHtml = (workouts||[]).map(w=>`<li>${w}</li>`).join("");
+  return `<div class="muscle-card">
+    <h3>${name}</h3>
+    <div>${tagHtml}</div>
+    <div class="sec"><b>위치</b><div class="small">${where}</div></div>
+    <div class="sec"><b>대표 역할</b><ul class="list">${rolesHtml}</ul></div>
+    <div class="sec"><b>추천 운동법</b><ul class="list">${workHtml}</ul></div>
+  </div>`;
+}
+
+document.getElementById('guideGrid').innerHTML = GUIDE.map(makeCard).join("");
+
 </script>
 </body>
 </html>
